@@ -21,6 +21,7 @@ require "sendy/campaigns"
 require "sendy/subscribers"
 require "sendy/events"
 require "sendy/transactions"
+require "sendy/users"
 
 module Sendy
   @app_info = nil
