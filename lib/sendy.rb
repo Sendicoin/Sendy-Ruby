@@ -17,6 +17,10 @@ require "sendy/version"
 
 # API operations
 require "sendy/sendy_api"
+require "sendy/campaigns"
+require "sendy/subscribers"
+require "sendy/events"
+require "sendy/transactions"
 
 module Sendy
   @app_info = nil
