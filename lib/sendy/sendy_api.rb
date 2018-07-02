@@ -15,6 +15,9 @@ module Sendy
     SUBSCRIBERS_COUNT_URL = "#{SENDY_HOST}/api/subscribers/count.json".freeze
     EVENTS_COUNT_URL = "#{SENDY_HOST}/api/events/count.json".freeze
     TRANSACTIONS_URL = "#{SENDY_HOST}/api/transactions".freeze
+    CREATE_USER_URL = "#{SENDY_HOST}/auth/signup"
+    FIND_USER_URL = "#{SENDY_HOST}/auth/find_user"
+    ADD_TOKENS_URL = "#{SENDY_HOST}/api/add_tokens_to_user"
 
     def initialize(esp_id, email, password, authorization = nil)
       @esp_id = esp_id
