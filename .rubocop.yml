@@ -1,0 +1,27 @@
+AlignParameters:
+  Enabled: false
+
+Documentation:
+  Enabled: false
+
+SpaceInsideHashLiteralBraces:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 90
+
+Metrics/BlockLength:
+  ExcludedMethods: ['describe', 'context']
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+  
