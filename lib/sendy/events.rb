@@ -1,5 +1,5 @@
 module Sendy
-  class Events < Sendy
+  class Events < SendyApi
     def events_count
       api_call('get', EVENTS_COUNT_URL)['count']
     end

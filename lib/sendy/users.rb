@@ -1,5 +1,5 @@
 module Sendy
-  class Users < Sendy
+  class Users < SendyApi
     def current_balance
       Users.find_user(user)['balance'] || '0.0'
     end

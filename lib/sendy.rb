@@ -25,7 +25,7 @@ require "sendy/users"
 module Sendy
   @app_info = nil
 
-  class Sendy
+  class SendyApi
 
     SENDY_HOST = 'localhost:3000'
     LOGIN_URL = "#{SENDY_HOST}/auth/login".freeze
