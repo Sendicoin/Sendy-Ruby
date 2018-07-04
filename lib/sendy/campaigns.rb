@@ -1,5 +1,5 @@
 module Sendy
-  class Campaigns < SendyApi
+  class Campaigns
     def campaigns_count
       api_call('get', CAMPAIGNS_COUNT_URL)['count']
     end
