@@ -57,8 +57,6 @@ module Sendy
     @authorization = RestClient.post(LOGIN_URL, params).body
   end
 
-  private
-
   def api_call(method, url, params = nil)
     response = JSON.parse(api_request(method, url, params))
   rescue RestClient::NotAcceptable => e
