@@ -16,6 +16,7 @@ require "rest-client"
 require "sendy/version"
 
 # API operations
+require "sendy/api"
 require "sendy/campaigns"
 require "sendy/subscribers"
 require "sendy/events"
@@ -43,19 +44,8 @@ module Sendy
   class InternalAPIError < StandardError; end
   class IncorrectTransaction < StandardError; end
 
-  attr_accessor :email, :password, :esp_id, :authorization
-
-  def initialize(esp_id, email, password, authorization = nil)
-    @esp_id = esp_id
-    @email = email
-    @password = password
-    @authorization = authorization
-  end
-
-  def login
-    params = { esp_id: esp_id, email: email, password: password }
-    @authorization = RestClient.post(LOGIN_URL, params).body
-  end
+  
+  private
 
   def api_call(method, url, params = nil)
     response = JSON.parse(api_request(method, url, params))
