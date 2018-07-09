@@ -1,6 +1,5 @@
 module Sendy
-  class Transactions
-    include Sendy
+  class Transaction
     def transactions
       api_call('get', TRANSACTIONS_URL).map { |transaction| OpenStruct.new(transaction) }
     end
