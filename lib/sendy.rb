@@ -17,7 +17,7 @@ require "sendy/version"
 
 # API operations
 require "sendy/api"
-require "sendy/campaigns"
+require "sendy/campaign"
 require "sendy/subscriber"
 require "sendy/event"
 require "sendy/transaction"
