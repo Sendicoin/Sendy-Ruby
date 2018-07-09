@@ -6,10 +6,10 @@ module Sendy
     end
 
     def self.add_tokens(user, amount)
-      params = { user_id: user.sendy.uid, amount: amount}.merge!(esp_login_params)
+      params = { user_id: user.sendy.uid, amount: amount}.merge!(Sendy.esp_login_params)
       JSON.parse(RestClient.post(ADD_TOKENS_URL, params))
     rescue RestClient::NotAcceptable => e
-      raise SendyApi::IncorrectTransaction.new(e.response.to_s)
+      raise Api::IncorrectTransaction.new(e.response.to_s)
     end
 
     def self.create_user(user)
@@ -29,7 +29,7 @@ module Sendy
     end
 
     def self.find_user(user)
-      params = { uid: user.id }.merge!(esp_login_params)
+      params = { uid: user.id }.merge!(Sendy.esp_login_params)
       JSON.parse(RestClient.post(FIND_USER_URL, params))
     rescue RestClient::NotFound
       false
@@ -37,23 +37,16 @@ module Sendy
 
     private
 
-    def sendy_api
-      @sendy ||= SendyApi.new(1, user.email, password, last_auth_header)
-    end
+    # def sendy_api
+    #   @sendy ||= SendyApi.new(1, user.email, password, last_auth_header)
+    # end
 
     def self.create_user_params(user, api_password)
       {
         uid: user.id,
         email: user.email,
         password: api_password
-      }.merge!(esp_login_params)
-    end
-
-    def self.esp_login_params
-      {
-        esp_name: @esp_user_name,
-        esp_password: @esp_password
-      }
+      }.merge!(Sendy.esp_login_params)
     end
   end
 end

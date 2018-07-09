@@ -44,8 +44,14 @@ module Sendy
   class InternalAPIError < StandardError; end
   class IncorrectTransaction < StandardError; end
 
-  
-  private
+  def sendy_api
+    @sendy ||= Sendy::Api.new(1, user.email, user.password, last_auth_header)
+  end
+
+  def login
+    params = { esp_id: sendy_api.esp_id, email: sendy_api.email, password: sendy_api.password }
+    @authorization = RestClient.post(LOGIN_URL, params).body
+  end
 
   def api_call(method, url, params = nil)
     response = JSON.parse(api_request(method, url, params))
@@ -66,11 +72,18 @@ module Sendy
 
   def api_request(method, url, params = nil)
     RestClient::Request.execute(method: method, url: url, payload: params,
-                                headers: { Authorization: authorization })
+                                headers: { Authorization: sendy_api.authorization })
   rescue RestClient::Unauthorized
     relogin
     RestClient::Request.execute(method: method, url: url, payload: params,
-                                headers: { Authorization: authorization })
+                                headers: { Authorization: sendy_api.authorization })
+  end
+
+  def self.esp_login_params
+    {
+      esp_name: ENV['SENDY_ESP_NAME'],
+      esp_password: ENV['SENDY_ESP_PASSWORD']
+    }
   end
 
   def relogin
