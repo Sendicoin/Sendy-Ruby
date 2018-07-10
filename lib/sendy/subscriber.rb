@@ -1,5 +1,5 @@
 module Sendy
-  module Subscriber
+  class Subscriber
     include Sendy
     def subscribers_count
       api_call('get', SUBSCRIBERS_COUNT_URL)['count']
