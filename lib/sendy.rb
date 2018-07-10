@@ -44,6 +44,9 @@ module Sendy
   class InternalAPIError < StandardError; end
   class IncorrectTransaction < StandardError; end
 
+  class << self
+  end
+
   def sendy_api
     @sendy ||= Sendy::Api.new(1, user.email, user.password, last_auth_header)
   end
