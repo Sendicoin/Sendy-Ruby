@@ -1,11 +1,11 @@
 module Sendy
   class Api
     include Sendy
-    extend User
-    extend Transaction
-    extend Event
-    extend Campaign
-    extend Subscriber
+    include User
+    include Transaction
+    include Event
+    include Campaign
+    include Subscriber
 
     attr_accessor :email, :password, :esp_id, :authorization
 
