@@ -1,11 +1,6 @@
 module Sendy
   class Api
     include Sendy
-    include Sendy::User
-    include Sendy::Transaction
-    include Sendy::Event
-    include Sendy::Campaign
-    include Sendy::Subscriber
 
     attr_accessor :email, :password, :esp_id, :authorization
 

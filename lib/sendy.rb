@@ -21,7 +21,7 @@ require "sendy/campaign"
 require "sendy/subscriber"
 require "sendy/event"
 require "sendy/transaction"
-require "./sendy/user"
+require "sendy/user"
 
 module Sendy
   @app_info = nil
@@ -43,6 +43,7 @@ module Sendy
   class InvalidParams < StandardError; end
   class InternalAPIError < StandardError; end
   class IncorrectTransaction < StandardError; end
+  class InvalidRequestError < StandardError; end
 
   class << self
   end

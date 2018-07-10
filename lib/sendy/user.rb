@@ -1,8 +1,15 @@
 module Sendy
   class User
     include Sendy
-    def current_balance
-      Users.find_user(user)['balance'] || '0.0'
+    
+    attr_reader :id, :uid, :balance, :email, :password
+
+    def initialize(params)
+      @id = params[:id]
+      @uid = params[:uid]
+      @balance = params[:balance]
+      @email = params[:email]
+      @password = params[:password]
     end
 
     def self.add_tokens(user, amount)
@@ -12,16 +19,17 @@ module Sendy
       raise Api::IncorrectTransaction.new(e.response.to_s)
     end
 
-    def self.create_user(user)
+    def self.create(params)
+      # TODO SENDY API SHOULD RETURN IF UID IS CAPTURED
+      # validate params
+
       api_password = SecureRandom.hex
-      params = create_user_params(user, api_password)
+      params.merge!(Sendy.esp_login_params)
+      params.merge!(password: api_password)
       result = JSON.parse(RestClient.post(CREATE_USER_URL, params))
-      if !user.sendy
-        Users.create!(user_id: user.id, uid: result['user_id'],
-                      user_name: user.email, password: api_password)
-      else
-        user.sendy.update(user_name: user.email, password: api_password)
-      end
+      self.new(OpenStruct.new(result.merge!(password: api_password)))
+    rescue RestClient::UnprocessableEntity => e
+      raise InvalidRequestError.new(JSON.parse(e.response)['errors'])
     end
 
     def self.user_exists?(user)
