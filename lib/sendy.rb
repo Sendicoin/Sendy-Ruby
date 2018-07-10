@@ -21,7 +21,7 @@ require "sendy/campaign"
 require "sendy/subscriber"
 require "sendy/event"
 require "sendy/transaction"
-require "sendy/user"
+require "./sendy/user"
 
 module Sendy
   @app_info = nil
