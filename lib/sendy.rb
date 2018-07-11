@@ -48,15 +48,6 @@ module Sendy
   class << self
   end
 
-  def sendy_api
-    @sendy ||= Sendy::Api.new(1, user.email, user.password, last_auth_header)
-  end
-
-  def login
-    params = { esp_id: sendy_api.esp_id, email: sendy_api.email, password: sendy_api.password }
-    @authorization = RestClient.post(LOGIN_URL, params).body
-  end
-
   def api_call(method, url, params = nil)
     response = JSON.parse(api_request(method, url, params))
   rescue RestClient::NotAcceptable => e
@@ -64,23 +55,17 @@ module Sendy
     raise InvalidParams.new(e.response.to_s)
   rescue RestClient::UnprocessableEntity => e
     message = e.response.to_s
-    case
-    when message.match('Duplicate event')
-      raise DuplicateEvent.new(message)
-    else
-      raise e
-    end
   rescue RestClient::InternalServerError => e
     raise InternalAPIError.new
   end
 
   def api_request(method, url, params = nil)
     RestClient::Request.execute(method: method, url: url, payload: params,
-                                headers: { Authorization: sendy_api.authorization })
-  rescue RestClient::Unauthorized
-    relogin
-    RestClient::Request.execute(method: method, url: url, payload: params,
-                                headers: { Authorization: sendy_api.authorization })
+                                headers: { Authorization: last_auth_header })
+    #rescue RestClient::Unauthorized
+    #relogin
+    #RestClient::Request.execute(method: method, url: url, payload: params,
+    #                            headers: { Authorization: sendy_api.authorization })
   end
 
   def self.esp_login_params
