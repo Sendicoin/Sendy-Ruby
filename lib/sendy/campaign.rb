@@ -29,7 +29,7 @@ module Sendy
         @updated_at = params[:updated_at]
         @subject = params[:subject]
         @balance = params[:balance]
-        @opened_stake = params[:created_at]
+        @opened_stake = params[:opened_stake]
         @clicked_stake = params[:clicked_stake]
         @converted_stake = params[:converted_stake]
         @period_start = params[:period_start]

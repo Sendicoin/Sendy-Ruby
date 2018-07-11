@@ -31,6 +31,10 @@ module Sendy
       update_balance(result['balance'])
     end
 
+    def assign_api_password(password)
+      @password = password
+    end
+
     # ESP Section
     def self.create(params)
       # TODO SENDY API SHOULD RETURN IF UID IS CAPTURED
@@ -50,6 +54,7 @@ module Sendy
       result = JSON.parse(RestClient.post(FIND_USER_URL, params))
       self.new(OpenStruct.new(result))
     end
+
 
     private
 
