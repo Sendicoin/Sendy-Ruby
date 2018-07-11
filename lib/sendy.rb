@@ -26,7 +26,7 @@ require "sendy/user"
 module Sendy
   @app_info = nil
 
-  SENDY_HOST = 'localhost:3000'
+  SENDY_HOST = ENV['SENDY_HOST']
   LOGIN_URL = "#{SENDY_HOST}/auth/login".freeze
   SUBSCRIBERS_URL = "#{SENDY_HOST}/api/subscribers".freeze
   EVENTS_URL = "#{SENDY_HOST}/api/events".freeze
