@@ -1,6 +1,8 @@
 module Sendy
   class User
     include Sendy
+    include Transaction
+    include Campaign
     
     attr_reader :id, :uid, :balance, :email, :password, :esp_id, :last_auth_header
 
@@ -26,19 +28,7 @@ module Sendy
       update_balance(result['balance'])
     end
 
-    def create_campaign(params)
-      # TODO catch insuficient balance
-      Campaign.new(OpenStruct.new(api_call('post', CAMPAIGNS_URL, params)))
-    end
-
-    def find_campaign(campaign_id)
-      Campaign.new(OpenStruct.new(api_call('get', "#{CAMPAIGNS_URL}/#{campaign_id}")))
-    end
-
-    def campaigns
-      api_call('get', CAMPAIGNS_URL).map { |campaign| Campaign.new(OpenStruct.new(campaign)) }
-    end
-
+    # ESP Section
     def self.create(params)
       # TODO SENDY API SHOULD RETURN IF UID IS CAPTURED
       # validate params
