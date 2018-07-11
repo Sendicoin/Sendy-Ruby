@@ -6,7 +6,7 @@ module Sendy
     end
 
     def create_event(params)
-      api_call('post', EVENTS_URL, params)
+      Event.new(OpenStruct.new(api_call('post', EVENTS_URL, params))
     end
 
     def events
