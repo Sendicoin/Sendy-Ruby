@@ -3,6 +3,7 @@ module Sendy
     include Sendy
     include Transaction
     include Campaign
+    include Event
     
     attr_reader :id, :uid, :balance, :email, :password, :esp_id, :last_auth_header
 
