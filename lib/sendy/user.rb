@@ -9,14 +9,15 @@ module Sendy
       @uid = params[:uid]
       @balance = params[:balance]
       @email = params[:email]
-      @password = params[:password]
+      @password = params[:password] if params[:password]
     end
 
-    def self.add_tokens(user, amount)
-      params = { user_id: user.sendy.uid, amount: amount}.merge!(Sendy.esp_login_params)
-      JSON.parse(RestClient.post(ADD_TOKENS_URL, params))
-    rescue RestClient::NotAcceptable => e
-      raise Api::IncorrectTransaction.new(e.response.to_s)
+    def add_tokens(amount)
+      # TODO
+      # Bad path validation necessary with error exceptions
+      params = { uid: uid, amount: amount }.merge!(Sendy.esp_login_params)
+      result = JSON.parse(RestClient.post(ADD_TOKENS_URL, params))
+      update_balance(result['balance'])
     end
 
     def self.create(params)
@@ -32,29 +33,16 @@ module Sendy
       raise InvalidRequestError.new(JSON.parse(e.response)['errors'])
     end
 
-    def self.user_exists?(user)
-      find_user(user) && find_user(user)['uid'] == user.id.to_s
-    end
-
-    def self.find_user(user)
-      params = { uid: user.id }.merge!(Sendy.esp_login_params)
-      JSON.parse(RestClient.post(FIND_USER_URL, params))
-    rescue RestClient::NotFound
-      false
+    def self.find(params)
+      params.merge!(Sendy.esp_login_params)
+      result = JSON.parse(RestClient.post(FIND_USER_URL, params))
+      self.new(OpenStruct.new(result))
     end
 
     private
 
-    # def sendy_api
-    #   @sendy ||= SendyApi.new(1, user.email, password, last_auth_header)
-    # end
-
-    def self.create_user_params(user, api_password)
-      {
-        uid: user.id,
-        email: user.email,
-        password: api_password
-      }.merge!(Sendy.esp_login_params)
+    def update_balance(balance)
+      @balance = balance
     end
   end
 end
