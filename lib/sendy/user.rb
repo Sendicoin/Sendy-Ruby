@@ -6,7 +6,8 @@ module Sendy
     include Event
     include Subscriber
     
-    attr_reader :id, :uid, :balance, :email, :password, :esp_id, :last_auth_header
+    attr_reader :id, :uid, :balance, :email,
+                :password, :esp_id, :last_auth_header
 
     def initialize(params)
       @id = params[:id]
