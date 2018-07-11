@@ -2,7 +2,7 @@ module Sendy
   class User
     include Sendy
     
-    attr_reader :id, :uid, :balance, :email, :password
+    attr_reader :id, :uid, :balance, :email, :password, :esp_id, :last_auth_header
 
     def initialize(params)
       @id = params[:id]
@@ -10,6 +10,12 @@ module Sendy
       @balance = params[:balance]
       @email = params[:email]
       @password = params[:password] if params[:password]
+      @esp_id = params[:esp_id] || 1
+    end
+
+    def login
+      params = { esp_id: esp_id, email: email, password: password }
+      @last_auth_header = RestClient.post(LOGIN_URL, params).body
     end
 
     def add_tokens(amount)
@@ -18,6 +24,11 @@ module Sendy
       params = { uid: uid, amount: amount }.merge!(Sendy.esp_login_params)
       result = JSON.parse(RestClient.post(ADD_TOKENS_URL, params))
       update_balance(result['balance'])
+    end
+
+    def create_campaign(params)
+      # TODO catch insuficient balance
+      Campaign.new(OpenStruct.new(api_call('post', CAMPAIGNS_URL, params)))
     end
 
     def self.create(params)
