@@ -31,6 +31,14 @@ module Sendy
       Campaign.new(OpenStruct.new(api_call('post', CAMPAIGNS_URL, params)))
     end
 
+    def find_campaign(campaign_id)
+      Campaign.new(OpenStruct.new(api_call('get', "#{CAMPAIGNS_URL}/#{campaign_id}")))
+    end
+
+    def campaigns
+      api_call('get', CAMPAIGNS_URL).map { |campaign| Campaign.new(OpenStruct.new(campaign)) }
+    end
+
     def self.create(params)
       # TODO SENDY API SHOULD RETURN IF UID IS CAPTURED
       # validate params
