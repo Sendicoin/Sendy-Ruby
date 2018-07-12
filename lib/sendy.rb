@@ -24,8 +24,6 @@ require "sendy/transaction"
 require "sendy/user"
 
 module Sendy
-  attr_accessor :app_host, :app_esp_name, :app_esp_password
-
   @app_info = nil
 
   LOGIN_URL = "#{@app_host}/auth/login".freeze
@@ -47,6 +45,7 @@ module Sendy
   class InvalidRequestError < StandardError; end
 
   class << self
+    attr_accessor :app_host, :app_esp_name, :app_esp_password
   end
 
   def api_call(method, url, params = nil)
