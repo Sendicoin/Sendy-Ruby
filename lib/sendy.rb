@@ -26,18 +26,21 @@ require "sendy/user"
 module Sendy
   @app_info = nil
 
-  SENDY_HOST = ENV['SENDY_HOST']
-  LOGIN_URL = "#{SENDY_HOST}/auth/login".freeze
-  SUBSCRIBERS_URL = "#{SENDY_HOST}/api/subscribers".freeze
-  EVENTS_URL = "#{SENDY_HOST}/api/events".freeze
-  CAMPAIGNS_URL = "#{SENDY_HOST}/api/campaigns".freeze
-  CAMPAIGNS_COUNT_URL = "#{SENDY_HOST}/api/campaigns/count.json".freeze
-  SUBSCRIBERS_COUNT_URL = "#{SENDY_HOST}/api/subscribers/count.json".freeze
-  EVENTS_COUNT_URL = "#{SENDY_HOST}/api/events/count.json".freeze
-  TRANSACTIONS_URL = "#{SENDY_HOST}/api/transactions".freeze
-  CREATE_USER_URL = "#{SENDY_HOST}/auth/signup"
-  FIND_USER_URL = "#{SENDY_HOST}/auth/find_user"
-  ADD_TOKENS_URL = "#{SENDY_HOST}/api/add_tokens_to_user"
+  @app_host = nil
+  @app_esp_name = nil
+  @app_esp_password = nil
+
+  LOGIN_URL = "#{@app_host}/auth/login".freeze
+  SUBSCRIBERS_URL = "#{@app_host}/api/subscribers".freeze
+  EVENTS_URL = "#{@app_host}/api/events".freeze
+  CAMPAIGNS_URL = "#{@app_host}/api/campaigns".freeze
+  CAMPAIGNS_COUNT_URL = "#{@app_host}/api/campaigns/count.json".freeze
+  SUBSCRIBERS_COUNT_URL = "#{@app_host}/api/subscribers/count.json".freeze
+  EVENTS_COUNT_URL = "#{@app_host}/api/events/count.json".freeze
+  TRANSACTIONS_URL = "#{@app_host}/api/transactions".freeze
+  CREATE_USER_URL = "#{@app_host}/auth/signup"
+  FIND_USER_URL = "#{@app_host}/auth/find_user"
+  ADD_TOKENS_URL = "#{@app_host}/api/add_tokens_to_user"
 
   class DuplicateEvent < StandardError; end
   class InvalidParams < StandardError; end
@@ -69,10 +72,7 @@ module Sendy
   end
 
   def self.esp_login_params
-    {
-      esp_name: ENV['SENDY_ESP_NAME'],
-      esp_password: ENV['SENDY_ESP_PASSWORD']
-    }
+    { esp_name: @app_esp_name, esp_password: @app_esp_password }
   end
 
   def relogin
