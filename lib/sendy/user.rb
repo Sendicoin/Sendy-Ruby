@@ -20,14 +20,14 @@ module Sendy
 
     def login
       params = { esp_id: esp_id, email: email, password: password }
-      @last_auth_header = RestClient.post(LOGIN_URL, params).body
+      @last_auth_header = RestClient.post(login_url, params).body
     end
 
     def add_tokens(amount)
       # TODO
       # Bad path validation necessary with error exceptions
       params = { uid: uid, amount: amount }.merge!(Sendy.esp_login_params)
-      result = JSON.parse(RestClient.post(ADD_TOKENS_URL, params))
+      result = JSON.parse(RestClient.post(add_tokens_url, params))
       update_balance(result['balance'])
     end
 
@@ -43,7 +43,7 @@ module Sendy
       api_password = SecureRandom.hex
       params.merge!(Sendy.esp_login_params)
       params.merge!(password: api_password)
-      result = JSON.parse(RestClient.post(CREATE_USER_URL, params))
+      result = JSON.parse(RestClient.post(create_user_url, params))
       self.new(OpenStruct.new(result.merge!(password: api_password)))
     rescue RestClient::UnprocessableEntity => e
       raise InvalidRequestError.new(JSON.parse(e.response)['errors'])
@@ -51,10 +51,25 @@ module Sendy
 
     def self.find(params)
       params.merge!(Sendy.esp_login_params)
-      result = JSON.parse(RestClient.post(FIND_USER_URL, params))
+      result = JSON.parse(RestClient.post(find_user_url, params))
       self.new(OpenStruct.new(result))
     end
 
+    def login_url
+      "#{Sendy.app_host}/auth/login"
+    end
+
+    def create_user_url
+      "#{Sendy.app_host}/auth/signup"
+    end
+
+    def self.find_user_url
+      "#{Sendy.app_host}/auth/find_user"
+    end
+
+    def add_tokens_url
+      "#{Sendy.app_host}/api/add_tokens_to_user"
+    end
 
     private
 

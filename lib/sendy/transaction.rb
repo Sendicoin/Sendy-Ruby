@@ -2,9 +2,13 @@ module Sendy
   module Transaction
 
     def transactions
-      api_call('get', TRANSACTIONS_URL).map do |transaction| 
+      api_call('get', transactions_url).map do |transaction| 
         Transaction.new(OpenStruct.new(transaction))
       end
+    end
+
+    def transactions_url
+      "#{Sendy.app_host}/api/transactions"
     end
 
     class Transaction
