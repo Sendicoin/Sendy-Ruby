@@ -10,8 +10,8 @@ module Sendy
       end
     end
 
-    def find_subscriber(email)
-      Subscriber.new(OpenStruct.new(api_call('get', "#{subscribers_url}/show")))
+    def find_subscriber(params)
+      Subscriber.new(OpenStruct.new(api_call('get', "#{subscribers_url}/show", params)))
     end
 
     def subscriber_events(subscriber_id)
