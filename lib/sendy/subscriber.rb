@@ -43,12 +43,13 @@ module Sendy
 
     class Subscriber
       include Sendy
-      attr_reader :email, :balance, :name
+      attr_reader :email, :balance, :name, :sign_up_url
 
       def initialize(params)
         @email = params[:email]
         @balance = params[:balance]
         @name = params[:name]
+        @sign_up_url = params[:sign_up_url]
       end
     end
   end
