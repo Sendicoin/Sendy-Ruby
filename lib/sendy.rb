@@ -32,8 +32,20 @@ module Sendy
   class IncorrectTransaction < StandardError; end
   class InvalidRequestError < StandardError; end
 
+  def create_user_url
+    "#{Sendy.app_host}/auth/signup"
+  end
+
+  def find_user_url
+    "#{Sendy.app_host}/auth/find_user"
+  end
+
+  def add_tokens_url
+    "#{Sendy.app_host}/api/add_tokens_to_user"
+  end
+
   class << self
-    attr_accessor :app_host, :app_esp_name, :app_esp_password, :api_call
+    attr_accessor :app_host, :app_esp_name, :app_esp_password
   end
 
   def api_call(method, url, params = nil)
@@ -49,18 +61,10 @@ module Sendy
 
   def api_request(method, url, params = nil)
     RestClient::Request.execute(method: method, url: url, payload: params,
-                                headers: { Authorization: last_auth_header })
-    #rescue RestClient::Unauthorized
-    #relogin
-    #RestClient::Request.execute(method: method, url: url, payload: params,
-    #                            headers: { Authorization: sendy_api.authorization })
+                                headers: { Authorization: "token #{api_token}" })
   end
 
   def self.esp_login_params
     { esp_name: @app_esp_name, esp_password: @app_esp_password }
-  end
-
-  def relogin
-    login
   end
 end
