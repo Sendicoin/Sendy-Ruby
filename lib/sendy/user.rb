@@ -1,15 +1,16 @@
 module Sendy
-  class User
-    include Sendy
-    include Transaction
-    include Campaign
-    include Event
-    include Subscriber
-    
+  class User < APIResource
+    OBJECT_NAME = 'user'
+    include Sendy::APIOperations::Save
+    extend  Sendy::APIOperations::NestedResource
+
+    nested_resource_class_methods :campaign, operations: %i[create retrieve list]
+
     attr_reader :id, :uid, :balance, :email,
                 :api_token, :esp_id, :last_auth_header
 
-    def initialize(params)
+    def old_initialize(params)
+      # @TODO
       @id = params[:id]
       @uid = params[:uid]
       @balance = params[:balance]
@@ -26,27 +27,8 @@ module Sendy
       update_balance(result['balance'])
     end
 
-    # ESP Section
-    def self.create(params)
-      params.merge!(Sendy.esp_login_params)
-      result = JSON.parse(RestClient.post(create_user_url, params))
-      self.new(OpenStruct.new(result))
-    rescue RestClient::UnprocessableEntity => e
-      raise InvalidRequestError.new(JSON.parse(e.response)['errors'])
-    end
-
-    def self.find(params)
-      params.merge!(Sendy.esp_login_params)
-      result = JSON.parse(RestClient.post(find_user_url, params))
-      self.new(OpenStruct.new(result))
-    end
-
-    def self.create_user_url
+    def resource_url
       "#{Sendy.app_host}/auth/signup"
-    end
-
-    def self.find_user_url
-      "#{Sendy.app_host}/auth/find_user"
     end
 
     private

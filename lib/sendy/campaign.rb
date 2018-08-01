@@ -1,20 +1,8 @@
 module Sendy
-  module Campaign
+  class Campaign < APIResource
+    OBJECT_NAME= 'campaign'
 
-    def create_campaign(params)
-      # TODO catch insuficient balance
-      Campaign.new(OpenStruct.new(api_call('post', campaigns_url, params)))
-    end
-
-    def find_campaign(campaign_id)
-      Campaign.new(OpenStruct.new(api_call('get', "#{campaigns_url}/#{campaign_id}")))
-    end
-
-    def campaigns
-      api_call('get', campaigns_url).map { |campaign| Campaign.new(OpenStruct.new(campaign)) }
-    end
-
-    def campaigns_url
+    def resource_url
       "#{Sendy.app_host}/api/campaigns"
     end
 

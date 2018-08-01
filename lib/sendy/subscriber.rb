@@ -1,5 +1,7 @@
 module Sendy
-  module Subscriber
+  class Subscriber < APIResource
+    OBJECT_NAME = 'subscriber'
+
     def subscribers_count
       api_call('get', subscribers_count_url)['count']
     end
@@ -37,7 +39,7 @@ module Sendy
       "#{Sendy.app_host}/api/subscribers/count.json"
     end
 
-    def subscribers_url
+    def resource_url
       "#{Sendy.app_host}/api/subscribers"
     end
 

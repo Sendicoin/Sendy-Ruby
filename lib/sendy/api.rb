@@ -1,3 +1,4 @@
+# @todo check this class
 module Sendy
   class Api
     include Sendy

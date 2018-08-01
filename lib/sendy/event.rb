@@ -1,5 +1,8 @@
 module Sendy
-  module Event
+  class Event < APIResource
+    extend  Sendy::APIOperations::List
+    OBJECT_NAME = 'event'.freeze
+
     def events_count
       api_call('get', Sendy.events)['count']
     end
@@ -12,25 +15,8 @@ module Sendy
       api_call('get', events_url).map { |event| Event.new(OpenStruct.new(event)) }
     end
 
-    def events_url
+    def resource_url
       "#{Sendy.app_host}/api/events"
-    end
-
-    class Event
-      include Sendy
-
-      attr_reader :subscriber_id, :event, :user_id,
-                  :campaign_id, :email, :occurred_at, :created_at
-
-      def initialize(params)
-        @subscriber_id = params[:subscriber_id]
-        @event = params[:event]
-        @user_id = params[:user_id]
-        @campaign_id = params[:campaign_id]
-        @email = params[:email]
-        @occurred_at = params[:occurred_at]
-        @created_at = params[:created_at]
-      end
     end
   end
 end
