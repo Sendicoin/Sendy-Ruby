@@ -3,10 +3,9 @@
 module Sendy
   module APIOperations
     module Delete
-      def delete(params = {}, opts = {})
-        opts = Util.normalize_opts(opts)
-        resp, opts = request(:delete, resource_url, params, opts)
-        initialize_from(resp.data, opts)
+      def delete(params = {})
+        resp = request(:delete, resource_url, params)
+        initialize_from(resp.data)
       end
     end
   end

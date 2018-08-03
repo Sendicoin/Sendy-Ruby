@@ -14,9 +14,5 @@ module Sendy
     def events
       api_call('get', events_url).map { |event| Event.new(OpenStruct.new(event)) }
     end
-
-    def resource_url
-      "#{Sendy.app_host}/api/events"
-    end
   end
 end

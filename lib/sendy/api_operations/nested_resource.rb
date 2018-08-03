@@ -17,34 +17,34 @@ module Sendy
         operations.each do |operation|
           case operation
           when :create
-            define_singleton_method(:"create_#{resource}") do |id, params = {}, opts = {}|
+            define_singleton_method(:"create_#{resource}") do |id, params = {}|
               url = send(resource_url_method, id)
-              resp, opts = request(:post, url, params)
-              Util.convert_to_sendy_object(resp.data, opts)
+              resp = request(:post, url, params)
+              Util.convert_to_sendy_object(resp.data)
             end
           when :retrieve
-            define_singleton_method(:"retrieve_#{resource}") do |id, nested_id, opts = {}|
+            define_singleton_method(:"retrieve_#{resource}") do |id, nested_id|
               url = send(resource_url_method, id, nested_id)
-              resp, opts = request(:get, url, {}, opts)
-              Util.convert_to_sendy_object(resp.data, opts)
+              resp = request(:get, url, {})
+              Util.convert_to_sendy_object(resp.data)
             end
           when :update
-            define_singleton_method(:"update_#{resource}") do |id, nested_id, params = {}, opts = {}|
+            define_singleton_method(:"update_#{resource}") do |id, nested_id, params = {}|
               url = send(resource_url_method, id, nested_id)
-              resp, opts = request(:post, url, params, opts)
-              Util.convert_to_sendy_object(resp.data, opts)
+              resp = request(:post, url, params)
+              Util.convert_to_sendy_object(resp.data)
             end
           when :delete
-            define_singleton_method(:"delete_#{resource}") do |id, nested_id, params = {}, opts = {}|
+            define_singleton_method(:"delete_#{resource}") do |id, nested_id, params = {}|
               url = send(resource_url_method, id, nested_id)
-              resp, opts = request(:delete, url, params, opts)
-              Util.convert_to_sendy_object(resp.data, opts)
+              resp = request(:delete, url, params)
+              Util.convert_to_sendy_object(resp.data)
             end
           when :list
-            define_singleton_method(:"list_#{resource}s") do |id, params = {}, opts = {}|
+            define_singleton_method(:"list_#{resource}s") do |id, params = {}|
               url = send(resource_url_method, id)
-              resp, opts = request(:get, url, params, opts)
-              Util.convert_to_sendy_object(resp.data, opts)
+              resp = request(:get, url, params)
+              Util.convert_to_sendy_object(resp.data)
             end
           else
             raise ArgumentError, "Unknown operation: #{operation.inspect}"

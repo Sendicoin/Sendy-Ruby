@@ -31,19 +31,18 @@ module Sendy
 
     def resource_url
       unless (id = self["id"])
-        raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", "id")
+        raise InvalidRequestError, "Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}"
       end
-      "#{self.class.resource_url}/#{CGI.escape(id)}"
+      "#{self.class.resource_url}/#{CGI.escape(id.to_s)}"
     end
 
     def refresh
-      resp, opts = request(:get, resource_url, @retrieve_params)
-      initialize_from(resp.data, opts)
+      resp = request(:get, resource_url, @retrieve_params)
+      initialize_from(resp.data)
     end
 
-    def self.retrieve(id, opts = {})
-      opts = Util.normalize_opts(opts)
-      instance = new(id, opts)
+    def self.retrieve(id)
+      instance = new(id)
       instance.refresh
       instance
     end

@@ -221,7 +221,6 @@ module Sendy
 
     def serialize_params(options = {})
       update_hash = {}
-
       @values.each do |k, v|
         # There are a few reasons that we may want to add in a parameter for
         # update:
@@ -373,6 +372,7 @@ module Sendy
     # * +:partial:+ Indicates that the re-initialization should not attempt to
     #   remove accessors.
     def initialize_from(values, partial = false)
+      values = Sendy::Util.symbolize_names(values)
       # the `#send` is here so that we can keep this method private
       @original_values = self.class.send(:deep_copy, values)
 

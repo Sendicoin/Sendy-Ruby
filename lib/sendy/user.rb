@@ -1,13 +1,10 @@
 module Sendy
   class User < APIResource
-    OBJECT_NAME = 'user'
-    include Sendy::APIOperations::Save
+    OBJECT_NAME = 'user'.freeze
     extend  Sendy::APIOperations::NestedResource
+    include Sendy::APIOperations::Save
 
     nested_resource_class_methods :campaign, operations: %i[create retrieve list]
-
-    attr_reader :id, :uid, :balance, :email,
-                :api_token, :esp_id, :last_auth_header
 
     def old_initialize(params)
       # @TODO
@@ -27,8 +24,8 @@ module Sendy
       update_balance(result['balance'])
     end
 
-    def resource_url
-      "#{Sendy.app_host}/auth/signup"
+    def campaigns(params = {})
+      Campaign.list(params.merge(user: id))
     end
 
     private

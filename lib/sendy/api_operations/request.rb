@@ -7,7 +7,7 @@ module Sendy
     module Request
       module ClassMethods
         def request(method, url, params = nil)
-          response = OpenStruct.new(JSON.parse(api_request(method, url, params)))
+          response = OpenStruct.new(data: JSON.parse(api_request(method, url, params), symbolize_names: true))
         rescue RestClient::NotAcceptable => e
           puts e.response
           raise InvalidParams.new(e.response.to_s)

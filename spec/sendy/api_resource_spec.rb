@@ -8,7 +8,7 @@ describe Sendy::APIResource do
   end
 
   before do
-    Sendy.app_host = 'localhost:3000'
+    Sendy.app_host = 'http://localhost:3000'
   end
 
   context ".save_nested_resource" do
@@ -65,21 +65,25 @@ describe Sendy::APIResource do
     end
 
     it "urlencode values in GET params" do
-      stub_request(:get, "http://localhost:3000/v1/transactions").
-        with(
+      stub_request(:get, "http://localhost:3000/v1/campaigns")
+        .with(
           body: {"user"=>"1"},
           headers: {
             'Authorization'=>'token valid_api_token',
-          }).
-          to_return(body: JSON.generate(data: [transaction_fixture]))
-      transactions = Sendy::Transaction.list(user: "1")
-      expect(transactions.is_a? Array).to be true
+          })
+        .to_return(body: JSON.generate(data: [campaign_fixture, campaign_fixture]))
+      campaigns = Sendy::Campaign.list(user: "1").data
+      expect(campaigns.is_a? Array).to be true
     end
 
     it "requesting with a unicode ID should result in a request" do
-      stub_request(:get, "#{Sendy.app_host}/v1/users/%E2%98%83")
-        .to_return(body: JSON.generate(make_missing_id_error), status: 404)
-      c = Sendy::User.new("☃")
+      stub_request(:get, "#{Sendy.app_host}/v1/transactions/%E2%98%83").
+        with(
+          headers: {
+            'Authorization'=>'token valid_api_token',
+          }).
+          to_raise(Sendy::InvalidRequestError)
+      c = Sendy::Transaction.new("☃")
       expect { c.refresh }.to raise_error(Sendy::InvalidRequestError)
     end
 
@@ -90,67 +94,75 @@ describe Sendy::APIResource do
 
     it "making a GET request with parameters should have a query string and no body" do
       stub_request(:get, "#{Sendy.app_host}/v1/transactions")
-        .with(query: { limit: 1 })
-        .to_return(body: JSON.generate(data: [transaction_fixture]))
-      Sendy::transaction.list(limit: 1)
+        .with(body: { limit: 1 },
+              headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate(transaction_fixture))
+      Sendy::Transaction.list(limit: 1)
     end
 
+    # @TODO review if we can create a transaction
     it "making a POST request with parameters should have a body and no query string" do
       stub_request(:post, "#{Sendy.app_host}/v1/transactions")
-        .with(body: { "amount" => "100", "currency" => "usd", "campaign" => "sc_token" })
+        .with(body: { "amount" => "100", "currency" => "usd", "campaign" => "sc_token"},
+              headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate(transaction_fixture))
       Sendy::Transaction.create(amount: 100, currency: "usd", campaign: "sc_token")
     end
 
     it "loading an object should issue a GET request" do
       stub_request(:get, "#{Sendy.app_host}/v1/transactions/ch_123")
+        .with(headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate(transaction_fixture))
-      c = Sendy::transaction.new("ch_123")
+      c = Sendy::Transaction.new("ch_123")
       c.refresh
     end
 
     it "using array accessors should be the same as the method interface" do
       stub_request(:get, "#{Sendy.app_host}/v1/transactions/ch_123")
+        .with(headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate(transaction_fixture))
-      c = Sendy::transaction.new("cus_123")
+
+      c = Sendy::Transaction.new("ch_123")
       c.refresh
-      expect(c.created).to eql c[:created]
-      expect(c.created).to eql c['created']
-      c["created"] = 12_345
-      expect(c.created).to eql 12_345
+      expect(c.created_at).to eql c[:created_at]
+      expect(c.created_at).to eql c['created_at']
+      c["created_at"] = 12_345
+      expect(c.created_at).to eql 12_345
     end
 
     it "accessing a property other than id or parent on an unfetched object should fetch it" do
-      stub_request(:get, "#{Sendy.app_host}/v1/transactions")
-        .with(query: { user: "cus_123" })
-        .to_return(body: JSON.generate(user_fixture))
+      stub_request(:get, "#{Sendy.app_host}/v1/campaigns")
+        .with(body: { 'user' => 'cus_123' }, headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate(data: [campaign_fixture]))
       c = Sendy::User.new("cus_123")
-      c.transactions
+      c.campaigns
     end
 
     it "updating an object should issue a POST request with only the changed properties" do
-      stub_request(:post, "#{Sendy.app_host}/v1/users/cus_123")
-        .with(body: { "description" => "another_mn" })
-        .to_return(body: JSON.generate(user_fixture))
-      c = Sendy::User.construct_from(user_fixture)
-      c.description = "another_mn"
-      c.save
+      stub_request(:post, "#{Sendy.app_host}/v1/campaigns/1")
+        .with(body: { "subject" => "another_mn" }, headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate(campaign_fixture))
+
+      t = Sendy::Campaign.construct_from(campaign_fixture)
+      t.subject = "another_mn"
+      t.save
     end
 
     it "updating should merge in returned properties" do
-      stub_request(:post, "#{Sendy.app_host}/v1/users/cus_123")
-        .with(body: { "description" => "another_mn" })
-        .to_return(body: JSON.generate(user_fixture))
-      c = Sendy::User.new("cus_123")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions/123")
+        .with(body: { "description" => "another_mn" }, headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate(transaction_fixture))
+      c = Sendy::Transaction.new("123")
       c.description = "another_mn"
       c.save
-      expect(c.another_user_property).to eql false
+      expect(c.amount).to eql 1
     end
 
     it "deleting should send no props and result in an object that has no props other deleted" do
-      stub_request(:delete, "#{Sendy.app_host}/v1/users/cus_123")
-        .to_return(body: JSON.generate("id" => "cus_123", "deleted" => true))
-      c = Sendy::User.construct_from(user_fixture)
+      stub_request(:delete, "#{Sendy.app_host}/v1/campaigns/1")
+        .with(headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate("id" => "1", "deleted" => true))
+      c = Sendy::Campaign.construct_from(campaign_fixture)
       c.delete
     end
 
@@ -158,67 +170,65 @@ describe Sendy::APIResource do
       stub_request(:get, "#{Sendy.app_host}/v1/transactions")
         .to_return(body: JSON.generate(data: [transaction_fixture]))
       transactions = Sendy::Transaction.list.data
-      expect(transactions.is_a?).to eql Array
-      expect(transactions[0].is_a?).to eql Sendy::Transaction
-      expect(transactions[0].source.is_a?).to eql Sendy::SendyObject
+      expect(transactions.class).to eql Array
+      expect(transactions[0].class).to eql Sendy::Transaction
     end
 
     it "add key to nested objects" do
-      acct = Sendy::Account.construct_from(id: "myid",
-                                           legal_entity: {
-        size: "l",
-        score: 4,
-        height: 10,
+      sub = Sendy::Subscriber.construct_from(id: "myid",
+                                         details: {
+        last_name: "Teixeira",
       })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
-        .with(body: { legal_entity: { first_name: "Bob" } })
+      stub_request(:post, "#{Sendy.app_host}/v1/subscribers/myid")
+        .with(body: { details: { first_name: "Marcos" } })
         .to_return(body: JSON.generate("id" => "myid"))
 
-      acct.legal_entity.first_name = "Bob"
-      acct.save
+      sub.details.first_name = "Marcos"
+      sub.save
     end
 
     it "save nothing if nothing changes" do
-      acct = Sendy::Account.construct_from(id: "acct_id",
+      sub = Sendy::Subscriber.construct_from(id: "acct_id",
                                            metadata: {
         key: "value",
       })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/acct_id")
+      stub_request(:post, "#{Sendy.app_host}/v1/subscribers/acct_id")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "acct_id"))
 
-      acct.save
+      sub.save
     end
 
     it "not save nested API resources" do
-      ch = Sendy::Transaction.construct_from(id: "ch_id",
+      ch = Sendy::Transaction.construct_from(id: "transaction_id",
                                         user: {
         object: "user",
         id: "user_id",
       })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/ch_id")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions/transaction_id")
         .with(body: {})
-        .to_return(body: JSON.generate("id" => "ch_id"))
+        .to_return(body: JSON.generate("id" => "transaction_id"))
 
       ch.user.description = "Bob"
       ch.save
     end
 
     it "correctly handle replaced nested objects" do
-      acct = Sendy::Account.construct_from(id: "myid",
+      acct = Sendy::Transaction.construct_from(id: "myid",
                                            legal_entity: {
-        last_name: "Smith",
+        last_name: "Teixeira",
         address: {
           line1: "test",
-          city: "San Francisco",
+          city: "Rio de Janeiro",
         },
       })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
-        .with(body: { legal_entity: { address: { line1: "Test2", city: "" } } })
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
+        .with(body: { legal_entity: { address: { line1: "Test2" } } },
+              headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate("id" => "my_id"))
 
       acct.legal_entity.address = { line1: "Test2" }
@@ -226,10 +236,10 @@ describe Sendy::APIResource do
     end
 
     it "correctly handle array setting" do
-      acct = Sendy::Account.construct_from(id: "myid",
+      acct = Sendy::Transaction.construct_from(id: "myid",
                                            legal_entity: {})
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
         .with(body: { legal_entity: { additional_owners: [{ first_name: "Bob" }] } })
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -237,48 +247,14 @@ describe Sendy::APIResource do
       acct.save
     end
 
-    it "correctly handle array insertion" do
-      acct = Sendy::Account.construct_from(id: "myid",
-                                           legal_entity: {
-        additional_owners: [],
-      })
-
-      # Note that this isn't a perfect check because we're using webmock's
-      # data decoding, which isn't aware of the Sendy array encoding that we
-      # use here.
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
-        .with(body: { legal_entity: { additional_owners: [{ first_name: "Bob" }] } })
-        .to_return(body: JSON.generate("id" => "myid"))
-
-      acct.legal_entity.additional_owners << { first_name: "Bob" }
-      acct.save
-    end
-
-    it "correctly handle array updates" do
-      acct = Sendy::Account.construct_from(id: "myid",
-                                           legal_entity: {
-        additional_owners: [{ first_name: "Bob" }, { first_name: "Jane" }],
-      })
-
-      # Note that this isn't a perfect check because we're using webmock's
-      # data decoding, which isn't aware of the Sendy array encoding that we
-      # use here.
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
-        .with(body: { legal_entity: { additional_owners: [{ first_name: "Janet" }] } })
-        .to_return(body: JSON.generate("id" => "myid"))
-
-      acct.legal_entity.additional_owners[1].first_name = "Janet"
-      acct.save
-    end
-
     it "correctly handle array noops" do
-      acct = Sendy::Account.construct_from(id: "myid",
+      acct = Sendy::Transaction.construct_from(id: "myid",
                                            legal_entity: {
         additional_owners: [{ first_name: "Bob" }],
       },
       currencies_supported: %w[usd cad])
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -286,12 +262,12 @@ describe Sendy::APIResource do
     end
 
     it "correctly handle hash noops" do
-      acct = Sendy::Account.construct_from(id: "myid",
+      acct = Sendy::Transaction.construct_from(id: "myid",
                                            legal_entity: {
         address: { line1: "1 Two Three" },
       })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts/myid")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -299,10 +275,10 @@ describe Sendy::APIResource do
     end
 
     it "should create a new resource when an object without an id is saved" do
-      account = Sendy::Account.construct_from(id: nil,
+      account = Sendy::Transaction.construct_from(id: nil,
                                               display_name: nil)
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions")
         .with(body: { display_name: "sendy" })
         .to_return(body: JSON.generate("id" => "acct_123"))
 
@@ -311,10 +287,10 @@ describe Sendy::APIResource do
     end
 
     it "set attributes as part of save" do
-      account = Sendy::Account.construct_from(id: nil,
+      account = Sendy::Transaction.construct_from(id: nil,
                                               display_name: nil)
 
-      stub_request(:post, "#{Sendy.app_host}/v1/accounts")
+      stub_request(:post, "#{Sendy.app_host}/v1/transactions")
         .with(body: { display_name: "sendy", metadata: { key: "value" } })
         .to_return(body: JSON.generate("id" => "acct_123"))
 
@@ -324,6 +300,7 @@ describe Sendy::APIResource do
 
   def transaction_fixture
     {
+      "object": 'transaction',
       "amount": 1,
       "campaign_id": nil,
       "created_at": "2018-07-31T16:02:14.108Z",

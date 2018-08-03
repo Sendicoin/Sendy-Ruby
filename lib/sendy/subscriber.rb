@@ -1,6 +1,8 @@
 module Sendy
   class Subscriber < APIResource
-    OBJECT_NAME = 'subscriber'
+    include Sendy::APIOperations::Save
+
+    OBJECT_NAME = 'subscriber'.freeze
 
     def subscribers_count
       api_call('get', subscribers_count_url)['count']
@@ -37,10 +39,6 @@ module Sendy
 
     def subscribers_count_url
       "#{Sendy.app_host}/api/subscribers/count.json"
-    end
-
-    def resource_url
-      "#{Sendy.app_host}/api/subscribers"
     end
 
     class Subscriber

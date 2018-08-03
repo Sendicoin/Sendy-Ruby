@@ -11,8 +11,8 @@ module Sendy
             end
           end
 
-          resp, opts = request(:post, "#{resource_url}/#{id}", params, opts)
-          Util.convert_to_sendy_object(resp.data, opts)
+          resp = request(:post, "#{resource_url}/#{id}", params)
+          Util.convert_to_sendy_object(resp.data)
         end
       end
 
@@ -25,8 +25,9 @@ module Sendy
 
         values.delete(:id)
 
-        resp, opts = request(:post, save_url, values, opts)
-        initialize_from(resp.data, opts)
+
+        resp = request(:post, save_url, values)
+        initialize_from(resp.data)
       end
 
       def self.included(base)

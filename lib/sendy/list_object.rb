@@ -26,12 +26,6 @@ module Sendy
       self.filters = {}
     end
 
-    def self.construct_from(values)
-      values = Sendy::Util.symbolize_names(values)
-
-      values.map { |value| new(value[:id]).send(:initialize_from, value) }
-    end
-
     def [](k)
       case k
       when String, Symbol
