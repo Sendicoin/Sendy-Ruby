@@ -44,7 +44,7 @@ module Sendy
     class Subscriber
       include Sendy
       attr_reader :email, :balance, :name,
-                  :sign_up_url, :coins_human, :coins_usd
+                  :sign_up_url, :coins_human, :coins_usd, :confirmed_at
 
       def initialize(params)
         @email = params[:email]
@@ -53,6 +53,7 @@ module Sendy
         @sign_up_url = params[:sign_up_url]
         @coins_human = params[:coins_human]
         @coins_usd = params[:coins_usd]
+        @confirmed_at = params[:confirmed_at]
       end
     end
   end
