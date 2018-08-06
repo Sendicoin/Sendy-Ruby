@@ -100,13 +100,12 @@ describe Sendy::APIResource do
       Sendy::Transaction.list(limit: 1)
     end
 
-    # @TODO review if we can create a transaction
     it "making a POST request with parameters should have a body and no query string" do
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions")
-        .with(body: { "amount" => "100", "currency" => "usd", "campaign" => "sc_token"},
+      stub_request(:post, "#{Sendy.app_host}/v1/campaigns")
+        .with(body: { "balance" => "100", "subject" => "subject"},
               headers: { 'Authorization'=>'token valid_api_token'})
-        .to_return(body: JSON.generate(transaction_fixture))
-      Sendy::Transaction.create(amount: 100, currency: "usd", campaign: "sc_token")
+        .to_return(body: JSON.generate(campaign_fixture))
+      Sendy::Campaign.create(balance: 100, subject: "subject")
     end
 
     it "loading an object should issue a GET request" do
@@ -139,26 +138,28 @@ describe Sendy::APIResource do
     end
 
     it "updating an object should issue a POST request with only the changed properties" do
-      stub_request(:post, "#{Sendy.app_host}/v1/campaigns/1")
-        .with(body: { "subject" => "another_mn" }, headers: { 'Authorization'=>'token valid_api_token'})
-        .to_return(body: JSON.generate(campaign_fixture))
+      stub_request(:post, "#{Sendy.app_host}/v1/users/1")
+        .with(body: { "email" => "another@example.com" }, headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate({'id' => 1 }))
 
-      t = Sendy::Campaign.construct_from(campaign_fixture)
-      t.subject = "another_mn"
+      t = Sendy::User.construct_from({'id' => 1})
+      t.email = "another@example.com"
       t.save
     end
 
-    it "updating should merge in returned properties" do
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/123")
-        .with(body: { "description" => "another_mn" }, headers: { 'Authorization'=>'token valid_api_token'})
-        .to_return(body: JSON.generate(transaction_fixture))
-      c = Sendy::Transaction.new("123")
-      c.description = "another_mn"
+    xit "updating should merge in returned properties" do
+      # TODO users endpoint has a different approach
+      stub_request(:post, "#{Sendy.app_host}/v1/users/123")
+        .with(body: { "email" => "test@email.com" }, headers: { 'Authorization'=>'token valid_api_token'})
+        .to_return(body: JSON.generate({}))
+      c = Sendy::User.new("123")
+      c.email = "test@email.com"
       c.save
-      expect(c.amount).to eql 1
+      expect(c.balance).to eql 41
     end
 
-    it "deleting should send no props and result in an object that has no props other deleted" do
+    xit "deleting should send no props and result in an object that has no props other deleted" do
+      # we don't have objects that can be deleted yet
       stub_request(:delete, "#{Sendy.app_host}/v1/campaigns/1")
         .with(headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate("id" => "1", "deleted" => true))
@@ -174,13 +175,14 @@ describe Sendy::APIResource do
       expect(transactions[0].class).to eql Sendy::Transaction
     end
 
-    it "add key to nested objects" do
-      sub = Sendy::Subscriber.construct_from(id: "myid",
+    xit "add key to nested objects" do
+      # we don't have objects that can be saved yet
+      sub = Sendy::Campaign.construct_from(id: "myid",
                                          details: {
         last_name: "Teixeira",
       })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/subscribers/myid")
+      stub_request(:post, "#{Sendy.app_host}/v1/campaigns/myid")
         .with(body: { details: { first_name: "Marcos" } })
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -188,7 +190,7 @@ describe Sendy::APIResource do
       sub.save
     end
 
-    it "save nothing if nothing changes" do
+    xit "save nothing if nothing changes" do
       sub = Sendy::Subscriber.construct_from(id: "acct_id",
                                            metadata: {
         key: "value",
@@ -296,24 +298,6 @@ describe Sendy::APIResource do
 
       account.save(display_name: "sendy", metadata: { key: "value" })
     end
-  end
-
-  def transaction_fixture
-    {
-      "object": 'transaction',
-      "amount": 1,
-      "campaign_id": nil,
-      "created_at": "2018-07-31T16:02:14.108Z",
-      "esp_id": 1,
-      "eth_tx": nil,
-      "from_address": nil,
-      "id": 1,
-      "subscriber_id": nil,
-      "to_address": nil,
-      "type": "EspToUserTxRecord",
-      "updated_at": "2018-07-31T16:02:14.108Z",
-      "user_id": 1
-    }
   end
 
   def make_missing_id_error

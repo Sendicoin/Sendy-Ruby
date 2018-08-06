@@ -41,3 +41,63 @@ def campaign_fixture
   }
 end
 
+def event_fixture
+  {
+    "object": "event",
+    "campaign_id": 1,
+    "created_at": "2018-07-31T16:19:06.893Z",
+    "email": "email@example.com",
+    "event": "opened",
+    "id": 1,
+    "occurred_at": "2018-07-31T16:18:45.000Z",
+    "subscriber_id": 1,
+    "updated_at": "2018-07-31T16:19:06.893Z",
+    "user_id": 1
+  }
+end
+
+def subscriber_fixture
+  {
+    "object": "subscriber",
+    "balance": 0,
+    "created_at": "2018-07-31T16:19:06.729Z",
+    "email": "email@example.com",
+    "id": 1,
+    "name": "Marcos Teixeira",
+    "sign_up_url": "http://localhost:3000/sign_up_by_email/WaNy6nBh67dPz2ZphwsQEYVj",
+    "signed_up_at": nil,
+    "updated_at": "2018-07-31T16:25:14.632Z"
+  }
+end
+
+def transaction_fixture
+  {
+    "object": 'transaction',
+    "amount": 1,
+    "campaign_id": nil,
+    "created_at": "2018-07-31T16:02:14.108Z",
+    "esp_id": 1,
+    "eth_tx": nil,
+    "from_address": nil,
+    "id": 1,
+    "subscriber_id": nil,
+    "to_address": nil,
+    "type": "EspToUserTxRecord",
+    "updated_at": "2018-07-31T16:02:14.108Z",
+    "user_id": 1
+  }
+end
+
+def user_fixture
+  {
+    "object": 'user',
+    "id":1,
+    "email":"support@sendicate.net",
+    "created_at":"2018-07-31T15:01:40.237Z",
+    "updated_at":"2018-07-31T15:01:40.237Z",
+    "balance":41,
+    "uid":"1",
+    "esp_id":1,
+    "api_token":"CXasPzXK3r3C52asgMv8vMk2"
+  }
+end

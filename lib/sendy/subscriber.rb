@@ -1,6 +1,6 @@
 module Sendy
   class Subscriber < APIResource
-    include Sendy::APIOperations::Save
+    extend Sendy::APIOperations::List
 
     OBJECT_NAME = 'subscriber'.freeze
 
@@ -41,16 +41,20 @@ module Sendy
       "#{Sendy.app_host}/api/subscribers/count.json"
     end
 
-    class Subscriber
-      include Sendy
-      attr_reader :email, :balance, :name, :sign_up_url
+    def self.update(_id, _params = nil)
+      raise NotImplementedError, "Subscribers cannot be updated"
+    end
 
-      def initialize(params)
-        @email = params[:email]
-        @balance = params[:balance]
-        @name = params[:name]
-        @sign_up_url = params[:sign_up_url]
-      end
+    def self.create(_params = nil)
+      raise NotImplementedError, "Subscribers cannot be created"
+    end
+
+    def save(_params = nil)
+      raise NotImplementedError, "Subscribers cannot be saved"
+    end
+
+    def delete(_params = {})
+      raise NotImplementedError, "Subscribers cannot be deleted"
     end
   end
 end

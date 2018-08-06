@@ -27,59 +27,42 @@ describe Sendy::Campaign do
           'Authorization'=>'token valid_api_token',
         })
       .to_return(body: JSON.generate(campaign_fixture))
-
-    stub_request(:post, "http://localhost:3000/v1/campaigns/1")
-      .with(
-        body: {"subject"=>"New Subject"},
-        headers: {
-          'Authorization'=>'token valid_api_token',
-        })
-      .to_return(body: JSON.generate(campaign_fixture))
-
-    stub_request(:delete, "http://localhost:3000/v1/campaigns/1")
-      .with(
-        headers: {
-          'Authorization'=>'token valid_api_token',
-        })
-      .to_return(body: JSON.generate(campaign_fixture))
   end
 
-  it "listable" do
+  it "is listable" do
     campaigns = Sendy::Campaign.list
     assert_requested :get, "#{Sendy.app_host}/v1/campaigns"
     expect(campaigns.data.is_a?(Array)).to be true
     expect(campaigns.first.is_a?(Sendy::Campaign)).to be true
   end
 
-  it "be retrievable" do
+  it "is retrievable" do
     campaign = Sendy::Campaign.retrieve("1")
     assert_requested :get, "#{Sendy.app_host}/v1/campaigns/1"
     expect(campaign.is_a?(Sendy::Campaign))
   end
 
-  it "be creatable" do
+  it "is creatable" do
     campaign = Sendy::Campaign.create
     assert_requested :post, "#{Sendy.app_host}/v1/campaigns"
     expect(campaign.is_a?(Sendy::Campaign))
   end
 
-  it "be saveable" do
+  it "is not saveable" do
     campaign = Sendy::Campaign.retrieve("1")
     campaign.subject = "New Subject"
-    campaign.save
-    assert_requested :post, "#{Sendy.app_host}/v1/campaigns/#{campaign.id}"
+    expect { campaign.save }.to raise_error(NotImplementedError)
+    assert_not_requested :post, "#{Sendy.app_host}/v1/campaigns/#{campaign.id}"
   end
 
-  it "be updateable" do
-    campaign = Sendy::Campaign.update("1", subject: "New Subject")
-    assert_requested :post, "#{Sendy.app_host}/v1/campaigns/1"
-    expect(campaign.is_a?(Sendy::Campaign))
+  it "is not updateable" do
+    expect do
+      Sendy::Campaign.update("1", subject: "New Subject")
+    end.to raise_error(NotImplementedError)
   end
 
-  it "be deletable" do
+  it "is not deletable" do
     campaign = Sendy::Campaign.retrieve("1")
-    campaign = campaign.delete
-    assert_requested :delete, "#{Sendy.app_host}/v1/campaigns/#{campaign.id}"
-    expect(campaign.is_a?(Sendy::Campaign))
+    expect { campaign.delete }.to raise_error(NotImplementedError)
   end
 end
