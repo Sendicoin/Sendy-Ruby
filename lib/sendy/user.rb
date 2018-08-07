@@ -2,6 +2,7 @@ module Sendy
   class User < APIResource
     OBJECT_NAME = 'user'.freeze
     extend  Sendy::APIOperations::NestedResource
+    extend  Sendy::APIOperations::Create
     include Sendy::APIOperations::Save
 
     def add_tokens(amount)

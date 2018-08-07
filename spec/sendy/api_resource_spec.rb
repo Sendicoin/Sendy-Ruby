@@ -204,99 +204,95 @@ describe Sendy::APIResource do
     end
 
     it "not save nested API resources" do
-      ch = Sendy::Transaction.construct_from(id: "transaction_id",
-                                        user: {
-        object: "user",
-        id: "user_id",
-      })
+      user = Sendy::User.construct_from(id: "user_id",
+                                        info: {
+                                          name: "Marcos",
+                                        })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/transaction_id")
+      stub_request(:post, "#{Sendy.app_host}/v1/users/user_id")
         .with(body: {})
-        .to_return(body: JSON.generate("id" => "transaction_id"))
+        .to_return(body: JSON.generate("id" => "user_id"))
 
-      ch.user.description = "Bob"
-      ch.save
+      user.info.last_name = "Teixeira"
+      user.save
     end
 
     it "correctly handle replaced nested objects" do
-      acct = Sendy::Transaction.construct_from(id: "myid",
-                                           legal_entity: {
-        last_name: "Teixeira",
-        address: {
-          line1: "test",
-          city: "Rio de Janeiro",
-        },
-      })
+      user = Sendy::User.construct_from(id: "myid",
+                                        info: {
+                                          last_name: "Teixeira",
+                                          address: {
+                                            line1: "test",
+                                            city: "Rio de Janeiro",
+                                          },
+                                        })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
-        .with(body: { legal_entity: { address: { line1: "Test2" } } },
+      stub_request(:post, "#{Sendy.app_host}/v1/users/myid")
+        .with(body: { info: { address: { line1: "Test2" } } },
               headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate("id" => "my_id"))
 
-      acct.legal_entity.address = { line1: "Test2" }
-      acct.save
+      user.info.address = { line1: "Test2" }
+      user.save
     end
 
     it "correctly handle array setting" do
-      acct = Sendy::Transaction.construct_from(id: "myid",
-                                           legal_entity: {})
+      user = Sendy::User.construct_from(id: "myid", info: {})
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
-        .with(body: { legal_entity: { additional_owners: [{ first_name: "Bob" }] } })
+      stub_request(:post, "#{Sendy.app_host}/v1/users/myid")
+        .with(body: { info: { address: [{ street: "Company Street" }] } })
         .to_return(body: JSON.generate("id" => "myid"))
 
-      acct.legal_entity.additional_owners = [{ first_name: "Bob" }]
-      acct.save
+      user.info.address = [{ street: "Company Street" }]
+      user.save
     end
 
     it "correctly handle array noops" do
-      acct = Sendy::Transaction.construct_from(id: "myid",
-                                           legal_entity: {
-        additional_owners: [{ first_name: "Bob" }],
-      },
-      currencies_supported: %w[usd cad])
+      user = Sendy::User.construct_from(id: "myid",
+                                        info: {
+                                         address: [{ street: "Street" }],
+                                        },
+                                        currencies_supported: %w[usd cad])
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
+      stub_request(:post, "#{Sendy.app_host}/v1/users/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
-      acct.save
+      user.save
     end
 
     it "correctly handle hash noops" do
-      acct = Sendy::Transaction.construct_from(id: "myid",
-                                           legal_entity: {
-        address: { line1: "1 Two Three" },
-      })
+      user = Sendy::User.construct_from(id: "myid",
+                                        info: {
+                                          address: { line1: "1 Two Three" },
+                                        })
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions/myid")
+      stub_request(:post, "#{Sendy.app_host}/v1/users/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
-      acct.save
+      user.save
     end
 
     it "should create a new resource when an object without an id is saved" do
-      account = Sendy::Transaction.construct_from(id: nil,
-                                              display_name: nil)
+      user = Sendy::User.construct_from(id: nil, display_name: nil)
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions")
+      stub_request(:post, "#{Sendy.app_host}/v1/users")
         .with(body: { display_name: "sendy" })
         .to_return(body: JSON.generate("id" => "acct_123"))
 
-      account.display_name = "sendy"
-      account.save
+      user.display_name = "sendy"
+      user.save
     end
 
     it "set attributes as part of save" do
-      account = Sendy::Transaction.construct_from(id: nil,
-                                              display_name: nil)
+      user = Sendy::User.construct_from(id: nil, display_name: nil)
 
-      stub_request(:post, "#{Sendy.app_host}/v1/transactions")
+      stub_request(:post, "#{Sendy.app_host}/v1/users")
         .with(body: { display_name: "sendy", metadata: { key: "value" } })
         .to_return(body: JSON.generate("id" => "acct_123"))
 
-      account.save(display_name: "sendy", metadata: { key: "value" })
+      user.save(display_name: "sendy", metadata: { key: "value" })
     end
   end
 
