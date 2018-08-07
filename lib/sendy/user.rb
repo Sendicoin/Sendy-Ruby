@@ -14,7 +14,11 @@ module Sendy
     end
 
     def campaigns(params = {})
-      Campaign.list(params.merge(user: id))
+      Campaign.list(params.merge(user_id: id))
+    end
+
+    def self.list(_params = nil)
+      raise NotImplementedError, "Users cannot be listed"
     end
 
     def delete(_params = {})
