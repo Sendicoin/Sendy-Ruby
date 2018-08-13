@@ -22,6 +22,7 @@ require "sendy/api_operations/list"
 require "sendy/api_operations/nested_resource"
 require "sendy/api_operations/request"
 require "sendy/api_operations/save"
+require "sendy/api_operations/count"
 
 # API resource support classes
 require "sendy/util"

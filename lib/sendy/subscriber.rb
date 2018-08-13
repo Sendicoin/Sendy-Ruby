@@ -4,43 +4,6 @@ module Sendy
 
     OBJECT_NAME = 'subscriber'.freeze
 
-    def subscribers_count
-      api_call('get', subscribers_count_url)['count']
-    end
-
-    def subscribers
-      api_call('get', subscribers_url).map do |subscriber|
-        Subscriber.new(OpenStruct.new(subscriber))
-      end
-    end
-
-    def find_subscriber(params)
-      Subscriber.new(OpenStruct.new(api_call('get', "#{subscribers_url}/show", params)))
-    end
-
-    def subscriber_events(subscriber_id)
-      events.select { |event| event.subscriber_id == subscriber_id.to_i }
-    end
-
-    def subscriber_campaigns(subscriber_id)
-      api_call('get', subscribers_campaigns_url(subscriber_id)).map do |campaign|
-        Campaign.new(OpenStruct.new(campaign))
-      end
-    end
-
-    def subscribers_campaigns_url(subscriber_id)
-      "#{subscribers_url}/#{subscriber_id}/campaigns"
-    end
-
-    def subscriber_campaign(subscriber_id, campaign_id)
-      subscriber_campaigns(subscriber_id)
-        .select { |campaign| campaign.id == campaign_id.to_i }.first
-    end
-
-    def subscribers_count_url
-      "#{Sendy.app_host}/api/subscribers/count.json"
-    end
-
     def self.update(_id, _params = nil)
       raise NotImplementedError, "Subscribers cannot be updated"
     end
@@ -55,6 +18,14 @@ module Sendy
 
     def delete(_params = {})
       raise NotImplementedError, "Subscribers cannot be deleted"
+    end
+
+    def events(params = {})
+      Event.list(params, { endpoint: Event.resource_endpoint(id, OBJECT_NAME) })
+    end
+
+    def campaigns(params = {})
+      Campaign.list(params, { endpoint: Campaign.resource_endpoint(id, OBJECT_NAME) })
     end
   end
 end

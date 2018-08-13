@@ -3,6 +3,7 @@ module Sendy
     OBJECT_NAME = 'user'.freeze
     extend  Sendy::APIOperations::NestedResource
     extend  Sendy::APIOperations::Create
+    extend  Sendy::APIOperations::Count
     include Sendy::APIOperations::Save
 
     def add_tokens(amount)
@@ -14,7 +15,22 @@ module Sendy
     end
 
     def campaigns(params = {})
-      Campaign.list(params.merge(user_id: id))
+      Campaign.list(params, { endpoint: Campaign.resource_endpoint(id) })
+    end
+
+    def transactions(params = {})
+      Transaction.list(params, {
+                        endpoint: Transaction.resource_endpoint(id),
+                        operations: [:list]})
+    end
+
+    def events(params = {})
+      Event.list(params, { endpoint: Event.resource_endpoint(id) })
+    end
+
+    def subscribers(params = {})
+      Subscriber.list(params, { endpoint: Subscriber.resource_endpoint(id),
+                                operations: [:list] })
     end
 
     def self.list(_params = nil)

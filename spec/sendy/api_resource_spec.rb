@@ -130,8 +130,8 @@ describe Sendy::APIResource do
     end
 
     it "accessing a property other than id or parent on an unfetched object should fetch it" do
-      stub_request(:get, "#{Sendy.app_host}/v1/campaigns")
-        .with(body: { 'user' => 'cus_123' }, headers: { 'Authorization'=>'token valid_api_token'})
+      stub_request(:get, "#{Sendy.app_host}/v1/users/cus_123/campaigns")
+        .with(headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate(data: [campaign_fixture]))
       c = Sendy::User.new("cus_123")
       c.campaigns
@@ -293,6 +293,25 @@ describe Sendy::APIResource do
         .to_return(body: JSON.generate("id" => "acct_123"))
 
       user.save(display_name: "sendy", metadata: { key: "value" })
+    end
+
+    context "#count" do
+      it "count resources" do
+        stub_request(:get, "#{Sendy.app_host}/v1/users/count.json")
+          .with(headers: { 'Authorization'=>'token valid_api_token' })
+          .to_return(body: JSON.generate("count" => 100))
+
+        expect(Sendy::User.count).to eq(100)
+      end
+
+      it "count nested resources" do
+        user = Sendy::User.construct_from(id: 1)
+        stub_request(:get, "#{Sendy.app_host}/v1/users/1/transactions/count.json")
+          .with(headers: { 'Authorization'=>'token valid_api_token' })
+          .to_return(body: JSON.generate("count" => 10))
+
+        expect(user.transactions_count).to eq(10)
+      end
     end
   end
 

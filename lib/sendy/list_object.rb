@@ -35,6 +35,22 @@ module Sendy
       end
     end
 
+    def self.list(filters = {}, list_options = {})
+      if operations.nil? || operations.empty? || operations.include?(:list)
+        super(params)
+      else
+        raise InvalidRequestError, "This resource cannot be created"
+      end
+    end
+
+    def create(params = {})
+      if operations.nil? || operations.empty? || operations.include?(:create)
+        super(params)
+      else
+        raise InvalidRequestError, "This resource cannot be created"
+      end
+    end
+
     # Iterates through each resource in the page represented by the current
     # `ListObject`.
     #

@@ -19,6 +19,17 @@ module Sendy
       "#{Sendy.app_host}/v1/#{self::OBJECT_NAME.downcase.tr('.', '/')}s"
     end
 
+    def self.resource_count_url
+      "#{resource_url}/count.json"
+    end
+
+    # endpoint when request comes from parent resource
+    # like an user requesting campaigns should request
+    # /users/:user_id/campaigns instead of /campaigns
+    def self.resource_endpoint(id, source = 'user')
+      "#{Sendy.app_host}/v1/#{source}s/#{id}/#{self::OBJECT_NAME}s"
+    end
+
     def self.save_nested_resource(name)
       define_method(:"#{name}=") do |value|
         super(value)
@@ -45,6 +56,10 @@ module Sendy
       instance = new(id)
       instance.refresh
       instance
+    end
+
+    def self.find(id)
+      retrieve(id)
     end
   end
 end

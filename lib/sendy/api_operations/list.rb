@@ -3,13 +3,12 @@
 module Sendy
   module APIOperations
     module List
-      def list(filters = {})
-        resp = request(:get, resource_url, filters)
-        resp.url = if resp.source
-                     "#{Sendy.app_host}/#{resp.source}s/#{resp.source_uid}/#{self::OBJECT_NAME}s"
-                   else
-                     "#{Sendy.app_host}/#{self::OBJECT_NAME}s"
-                   end
+      def list(filters = {}, list_options = {})
+        endpoint = list_options[:endpoint]
+
+        resp = request(:get, endpoint || resource_url, filters)
+        resp.data[:url] = endpoint || resource_url
+        resp.data[:operations] = list_options[:operations]
 
         obj = ListObject.construct_from(resp.data)
 
