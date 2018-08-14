@@ -16,7 +16,7 @@ module Sendy
       end
       # Namespaces are separated in object names with periods (.) and in URLs
       # with forward slashes (/), so replace the former with the latter.
-      "#{Sendy.app_host}/v1/#{self::OBJECT_NAME.downcase.tr('.', '/')}s"
+      "#{Sendy.app_host}/api/v1/#{self::OBJECT_NAME.downcase.tr('.', '/')}s"
     end
 
     def self.resource_count_url
@@ -27,7 +27,7 @@ module Sendy
     # like an user requesting campaigns should request
     # /users/:user_id/campaigns instead of /campaigns
     def self.resource_endpoint(id, source = 'user')
-      "#{Sendy.app_host}/v1/#{source}s/#{id}/#{self::OBJECT_NAME}s"
+      "#{Sendy.app_host}/api/v1/#{source}s/#{id}/#{self::OBJECT_NAME}s"
     end
 
     def self.save_nested_resource(name)

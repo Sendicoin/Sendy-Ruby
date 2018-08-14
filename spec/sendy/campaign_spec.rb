@@ -7,21 +7,21 @@ describe Sendy::Campaign do
     Sendy.app_host = 'http://localhost:3000'
     Sendy.app_esp_password = 'valid_api_token'
 
-    stub_request(:get, "http://localhost:3000/v1/campaigns")
+    stub_request(:get, "http://localhost:3000/api/v1/campaigns")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
       .to_return(body: JSON.generate(data: [campaign_fixture]))
 
-    stub_request(:get, "http://localhost:3000/v1/campaigns/1")
+    stub_request(:get, "http://localhost:3000/api/v1/campaigns/1")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
       .to_return(body: JSON.generate(campaign_fixture))
 
-    stub_request(:post, "http://localhost:3000/v1/campaigns")
+    stub_request(:post, "http://localhost:3000/api/v1/campaigns")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
@@ -31,20 +31,20 @@ describe Sendy::Campaign do
 
   it "is listable" do
     campaigns = Sendy::Campaign.list
-    assert_requested :get, "#{Sendy.app_host}/v1/campaigns"
+    assert_requested :get, "#{Sendy.app_host}/api/v1/campaigns"
     expect(campaigns.data.is_a?(Array)).to be true
     expect(campaigns.first.is_a?(Sendy::Campaign)).to be true
   end
 
   it "is retrievable" do
     campaign = Sendy::Campaign.retrieve("1")
-    assert_requested :get, "#{Sendy.app_host}/v1/campaigns/1"
+    assert_requested :get, "#{Sendy.app_host}/api/v1/campaigns/1"
     expect(campaign.is_a?(Sendy::Campaign))
   end
 
   it "is creatable" do
     campaign = Sendy::Campaign.create
-    assert_requested :post, "#{Sendy.app_host}/v1/campaigns"
+    assert_requested :post, "#{Sendy.app_host}/api/v1/campaigns"
     expect(campaign.is_a?(Sendy::Campaign))
   end
 
@@ -52,7 +52,7 @@ describe Sendy::Campaign do
     campaign = Sendy::Campaign.retrieve("1")
     campaign.subject = "New Subject"
     expect { campaign.save }.to raise_error(NotImplementedError)
-    assert_not_requested :post, "#{Sendy.app_host}/v1/campaigns/#{campaign.id}"
+    assert_not_requested :post, "#{Sendy.app_host}/api/v1/campaigns/#{campaign.id}"
   end
 
   it "is not updateable" do

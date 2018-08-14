@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sendy (0.0.12)
+    sendy (0.0.14)
 
 GEM
   remote: https://rubygems.org/

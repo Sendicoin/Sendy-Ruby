@@ -7,14 +7,14 @@ describe Sendy::Subscriber do
     Sendy.app_host = 'http://localhost:3000'
     Sendy.app_esp_password = 'valid_api_token'
 
-    stub_request(:get, "http://localhost:3000/v1/subscribers")
+    stub_request(:get, "http://localhost:3000/api/v1/subscribers")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
       .to_return(body: JSON.generate(data: [subscriber_fixture]))
 
-    stub_request(:get, "http://localhost:3000/v1/subscribers/1")
+    stub_request(:get, "http://localhost:3000/api/v1/subscribers/1")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
@@ -24,20 +24,20 @@ describe Sendy::Subscriber do
 
   it "is listable" do
     subscribers = Sendy::Subscriber.list
-    assert_requested :get, "#{Sendy.app_host}/v1/subscribers"
+    assert_requested :get, "#{Sendy.app_host}/api/v1/subscribers"
     expect(subscribers.data.is_a?(Array)).to be true
     expect(subscribers.first.is_a?(Sendy::Subscriber)).to be true
   end
 
   it "is retrievable" do
     subscriber = Sendy::Subscriber.retrieve("1")
-    assert_requested :get, "#{Sendy.app_host}/v1/subscribers/1"
+    assert_requested :get, "#{Sendy.app_host}/api/v1/subscribers/1"
     expect(subscriber.is_a?(Sendy::Subscriber))
   end
 
   it "is not creatable" do
     expect { Sendy::Subscriber.create }.to raise_error(NotImplementedError)
-    assert_not_requested :post, "#{Sendy.app_host}/v1/subscribers"
+    assert_not_requested :post, "#{Sendy.app_host}/api/v1/subscribers"
   end
 
   it "is not saveable" do
@@ -59,14 +59,14 @@ describe Sendy::Subscriber do
 
   context "#events" do
     before do
-      stub_request(:get, "http://localhost:3000/v1/subscribers/1/events")
+      stub_request(:get, "http://localhost:3000/api/v1/subscribers/1/events")
         .with(
           headers: {
             'Authorization'=>'token valid_api_token',
           })
         .to_return(body: JSON.generate(data: [event_fixture]))
 
-      stub_request(:post, "http://localhost:3000/v1/subscribers/1/events")
+      stub_request(:post, "http://localhost:3000/api/v1/subscribers/1/events")
         .with(
           body: {"email"=>"email@example.com", "event" => "opened"},
           headers: {
@@ -78,7 +78,7 @@ describe Sendy::Subscriber do
     it "can list events" do
       subscriber = Sendy::Subscriber.retrieve("1")
       events = subscriber.events
-      assert_requested :get, "#{Sendy.app_host}/v1/subscribers/1/events"
+      assert_requested :get, "#{Sendy.app_host}/api/v1/subscribers/1/events"
       expect(events.data.is_a?(Array)).to be true
       expect(events.first.is_a?(Sendy::Event)).to be true
     end
@@ -86,7 +86,7 @@ describe Sendy::Subscriber do
     it "can create events" do
       subscriber = Sendy::Subscriber.retrieve("1")
       event = subscriber.events.create(email: 'email@example.com', event: 'opened')
-      assert_requested :post, "#{Sendy.app_host}/v1/subscribers/1/events"
+      assert_requested :post, "#{Sendy.app_host}/api/v1/subscribers/1/events"
       expect(event.subscriber_id).to eql(subscriber.id)
       expect(event.is_a?(Sendy::Event)).to be true
     end
@@ -94,14 +94,14 @@ describe Sendy::Subscriber do
 
   context "#campaigns" do
     before do
-      stub_request(:get, "http://localhost:3000/v1/subscribers/1/campaigns")
+      stub_request(:get, "http://localhost:3000/api/v1/subscribers/1/campaigns")
         .with(
           headers: {
             'authorization'=>'token valid_api_token',
           })
             .to_return(body: JSON.generate(data: [campaign_fixture]))
 
-      stub_request(:post, "http://localhost:3000/v1/subscribers/1/campaigns")
+      stub_request(:post, "http://localhost:3000/api/v1/subscribers/1/campaigns")
         .with(
           body: {"subject"=>"campaign subject"},
           headers: {
@@ -113,7 +113,7 @@ describe Sendy::Subscriber do
     it "can list campaigns" do
       subscriber = Sendy::Subscriber.retrieve("1")
       campaigns = subscriber.campaigns
-      assert_requested :get, "#{Sendy.app_host}/v1/subscribers/1/campaigns"
+      assert_requested :get, "#{Sendy.app_host}/api/v1/subscribers/1/campaigns"
       expect(campaigns.data.is_a?(Array)).to be true
       expect(campaigns.first.is_a?(Sendy::Campaign)).to be true
     end
@@ -121,7 +121,7 @@ describe Sendy::Subscriber do
     it "can create campaigns" do
       subscriber = Sendy::Subscriber.retrieve("1")
       campaign = subscriber.campaigns.create(subject: 'campaign subject')
-      assert_requested :post, "#{Sendy.app_host}/v1/subscribers/1/campaigns"
+      assert_requested :post, "#{Sendy.app_host}/api/v1/subscribers/1/campaigns"
       expect(campaign.is_a?(Sendy::Campaign)).to be true
     end
   end
