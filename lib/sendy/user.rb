@@ -7,11 +7,11 @@ module Sendy
     include Sendy::APIOperations::Save
 
     def add_tokens(amount)
-      # TODO
-      # Bad path validation necessary with error exceptions
-      params = { uid: uid, amount: amount }.merge!(Sendy.esp_login_params)
-      result = JSON.parse(RestClient.post( "#{Sendy.app_host}/api/add_tokens_to_user", params))
-      update_balance(result['balance'])
+      params = { uid: uid, amount: amount }
+      resp = request(:post, "#{Sendy.app_host}/api/v1/add_tokens_to_user", params)
+
+      # TODO ESP API
+      update_balance(resp.balance)
     end
 
     def campaigns(params = {})
