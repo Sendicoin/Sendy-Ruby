@@ -16,5 +16,9 @@ module Sendy
     def delete(_params = {})
       raise NotImplementedError, "Campaigns cannot be deleted"
     end
+
+    def events(params = {})
+      Event.list(params, { endpoint: Event.resource_endpoint(id, OBJECT_NAME) })
+    end
   end
 end

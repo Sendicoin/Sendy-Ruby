@@ -25,7 +25,8 @@ module Sendy
     end
 
     def events(params = {})
-      Event.list(params, { endpoint: Event.resource_endpoint(id) })
+      Event.list(params, { endpoint: Event.resource_endpoint(id),
+                           operations: [:list] })
     end
 
     def subscribers(params = {})

@@ -65,4 +65,39 @@ describe Sendy::Campaign do
     campaign = Sendy::Campaign.retrieve("1")
     expect { campaign.delete }.to raise_error(NotImplementedError)
   end
+
+  context "#events" do
+    before do
+      stub_request(:get, "http://localhost:3000/api/v1/campaigns/1/events")
+        .with(
+          headers: {
+            'Authorization'=>'token valid_api_token',
+          })
+        .to_return(body: JSON.generate(data: [event_fixture]))
+
+      stub_request(:post, "http://localhost:3000/api/v1/campaigns/1/events")
+        .with(
+          body: {"email"=>"email@example.com", "event" => "opened"},
+          headers: {
+            'Authorization'=>'token valid_api_token',
+          })
+            .to_return(body: JSON.generate(event_fixture))
+    end
+
+    it "can list events" do
+      campaign = Sendy::Campaign.retrieve("1")
+      events = campaign.events
+      assert_requested :get, "#{Sendy.app_host}/api/v1/campaigns/1/events"
+      expect(events.data.is_a?(Array)).to be true
+      expect(events.first.is_a?(Sendy::Event)).to be true
+    end
+
+    it "can create events" do
+      campaign = Sendy::Campaign.retrieve("1")
+      event = campaign.events.create(email: 'email@example.com', event: 'opened')
+      assert_requested :post, "#{Sendy.app_host}/api/v1/campaigns/1/events"
+      expect(event.campaign_id).to eql(campaign.id)
+      expect(event.is_a?(Sendy::Event)).to be true
+    end
+  end
 end
