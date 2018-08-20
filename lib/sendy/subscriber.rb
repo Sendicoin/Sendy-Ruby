@@ -1,6 +1,7 @@
 module Sendy
   class Subscriber < APIResource
     extend Sendy::APIOperations::List
+    extend Sendy::APIOperations::Count
 
     OBJECT_NAME = 'subscriber'.freeze
 

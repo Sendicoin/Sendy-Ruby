@@ -1,6 +1,7 @@
 module Sendy
   class Transaction < APIResource
     extend Sendy::APIOperations::List
+    extend Sendy::APIOperations::Count
 
     OBJECT_NAME = 'transaction'.freeze
 
