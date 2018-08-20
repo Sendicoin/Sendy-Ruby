@@ -1,10 +1,15 @@
 module Sendy
   class User < APIResource
     OBJECT_NAME = 'user'.freeze
+
     extend  Sendy::APIOperations::NestedResource
     extend  Sendy::APIOperations::Create
     extend  Sendy::APIOperations::Count
     include Sendy::APIOperations::Save
+
+    def self.resource_url
+      "#{Sendy.app_host}/esp_api/v1/#{OBJECT_NAME}s"
+    end
 
     def add_tokens(amount)
       params = { uid: uid, amount: amount }

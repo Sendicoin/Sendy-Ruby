@@ -11,7 +11,7 @@ module Sendy
             end
           end
 
-          resp = request(:post, "#{resource_url}/#{id}", params)
+          resp = request(:put, "#{resource_url}/#{id}", params)
           Util.convert_to_sendy_object(resp.data)
         end
       end

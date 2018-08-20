@@ -7,14 +7,14 @@ describe Sendy::User do
     Sendy.app_host = 'http://localhost:3000'
     Sendy.app_esp_password = 'valid_api_token'
 
-    stub_request(:get, "http://localhost:3000/api/v1/users")
+    stub_request(:get, "http://localhost:3000/esp_api/v1/users")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
       .to_return(body: JSON.generate(data: [user_fixture]))
 
-    stub_request(:post, "http://localhost:3000/api/v1/users")
+    stub_request(:post, "http://localhost:3000/esp_api/v1/users")
       .with(
         body: { 'email' => 'email@example.com' },
         headers: {
@@ -22,7 +22,7 @@ describe Sendy::User do
         })
       .to_return(body: JSON.generate(data: [user_fixture]))
 
-    stub_request(:post, "http://localhost:3000/api/v1/users/1")
+    stub_request(:post, "http://localhost:3000/esp_api/v1/users/CXasPzXK3r3C52asgMv8vMk2")
       .with(
         body: {"email"=>"another@email.com"},
         headers: {
@@ -30,7 +30,7 @@ describe Sendy::User do
         })
       .to_return(body: JSON.generate(user_fixture))
 
-    stub_request(:get, "http://localhost:3000/api/v1/users/1")
+    stub_request(:get, "http://localhost:3000/esp_api/v1/users/CXasPzXK3r3C52asgMv8vMk2")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
@@ -38,33 +38,38 @@ describe Sendy::User do
       .to_return(body: JSON.generate(user_fixture))
   end
 
-  # TODO by ESP only
-  it "is not listable" do
-    expect { Sendy::User.list }.to raise_error(NotImplementedError)
+  it "is listable" do
+    expect { Sendy::User.list }.to_not raise_error(NotImplementedError)
   end
 
-  it "is retrievable" do
-    user = Sendy::User.retrieve("1")
-    assert_requested :get, "#{Sendy.app_host}/api/v1/users/1"
+  xit "is findable" do
+    user = Sendy::User.find("CXasPzXK3r3C52asgMv8vMk2")
+    assert_requested :get, "#{Sendy.app_host}/esp_api/v1/users/#{user.api_token}"
+    expect(user.is_a?(Sendy::User))
+  end
+
+  xit "is retrievable" do
+    user = Sendy::User.retrieve("CXasPzXK3r3C52asgMv8vMk2")
+    assert_requested :get, "#{Sendy.app_host}/esp_api/v1/users/#{user.api_token}"
     expect(user.is_a?(Sendy::User))
   end
 
   it "is creatable" do
     user = Sendy::User.create(email: 'email@example.com')
-    assert_requested :post, "#{Sendy.app_host}/api/v1/users"
+    assert_requested :post, "#{Sendy.app_host}/esp_api/v1/users"
     expect(user.is_a?(Sendy::User))
   end
 
-  it "is saveable" do
-    user = Sendy::User.retrieve("1")
+  xit "is saveable" do
+    user = Sendy::User.retrieve("CXasPzXK3r3C52asgMv8vMk2")
     user.email = 'another@email.com'
     user.save
-    assert_requested :post, "#{Sendy.app_host}/api/v1/users/#{user.id}"
+    assert_requested :post, "#{Sendy.app_host}/esp_api/v1/users/#{user.api_token}"
   end
 
-  it "is updateable" do
-    user = Sendy::User.update("1", email: "another@email.com")
-    assert_requested :post, "#{Sendy.app_host}/api/v1/users/1"
+  xit "is updateable" do
+    user = Sendy::User.update("CXasPzXK3r3C52asgMv8vMk2", email: "another@email.com")
+    assert_requested :put, "#{Sendy.app_host}/esp_api/v1/users/#{user.api_token}"
     expect(user.is_a?(Sendy::User))
   end
 
