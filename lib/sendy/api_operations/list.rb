@@ -7,10 +7,10 @@ module Sendy
         endpoint = list_options[:endpoint]
 
         resp = request(:get, endpoint || resource_url, filters)
-        resp.data[:url] = endpoint || resource_url
-        resp.data[:operations] = list_options[:operations]
 
-        obj = ListObject.construct_from(resp.data)
+        obj = ListObject.construct_from(data: resp.data,
+                                        url: endpoint || resource_url,
+                                        operations: list_options[:operations])
 
         # set filters so that we can fetch the same limit, expansions, and
         # predicates when accessing the next and previous pages

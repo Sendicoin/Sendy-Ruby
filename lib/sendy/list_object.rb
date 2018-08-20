@@ -117,5 +117,9 @@ module Sendy
       url ||
         raise(ArgumentError, "List object does not contain a 'url' field.")
     end
+
+    def self.protected_fields
+      [:url, :operations]
+    end
   end
 end

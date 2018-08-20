@@ -2,6 +2,7 @@ module Sendy
   class Event < APIResource
     extend  Sendy::APIOperations::List
     extend Sendy::APIOperations::Create
+    extend Sendy::APIOperations::Count
     OBJECT_NAME = 'event'.freeze
 
     def events_count
