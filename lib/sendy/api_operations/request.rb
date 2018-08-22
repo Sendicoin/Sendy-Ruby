@@ -2,11 +2,12 @@
 
 module Sendy
   class InternalAPIError < StandardError; end
+  class InvalidParams < StandardError; end
 
   module APIOperations
     module Request
       module ClassMethods
-        def request(method, url, params = nil)
+        def request(method, url, params = {})
           response = OpenStruct.new(data: JSON.parse(api_request(method, url, params), symbolize_names: true))
         rescue RestClient::NotAcceptable => e
           puts e.response
@@ -17,7 +18,8 @@ module Sendy
           raise InternalAPIError.new
         end
 
-        def api_request(method, url, params = nil)
+        def api_request(method, url, params = {})
+          params.merge!(Sendy.esp_login_params)
           RestClient::Request.execute(method: method, url: url, payload: params,
                                       headers: { Authorization: "token #{Sendy.app_esp_password}" })
         end
