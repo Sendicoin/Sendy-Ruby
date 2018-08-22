@@ -11,6 +11,10 @@ module Sendy
       "#{Sendy.app_host}/esp_api/v1/#{OBJECT_NAME}s"
     end
 
+    def self.resource_count_url
+      "#{Sendy.app_host}/esp_api/v1/#{OBJECT_NAME}s/count"
+    end
+
     def add_tokens(amount)
       params = { uid: uid, amount: amount }
       resp = request(:post, "#{Sendy.app_host}/api/v1/add_tokens_to_user", params)

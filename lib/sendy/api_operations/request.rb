@@ -10,12 +10,13 @@ module Sendy
         def request(method, url, params = {})
           response = OpenStruct.new(data: JSON.parse(api_request(method, url, params), symbolize_names: true))
         rescue RestClient::NotAcceptable => e
-          puts e.response
           raise InvalidParams.new(e.response.to_s)
         rescue RestClient::UnprocessableEntity => e
-          message = e.response.to_s
+          raise InvalidRequestError.new(e.response.to_s)
         rescue RestClient::InternalServerError => e
           raise InternalAPIError.new
+        rescue RestClient::Unauthorized => e
+          raise AuthenticationError.new(e.response.to_s)
         end
 
         def api_request(method, url, params = {})
