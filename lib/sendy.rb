@@ -36,6 +36,7 @@ require "sendy/event"
 require "sendy/subscriber"
 require "sendy/transaction"
 require "sendy/user"
+require "sendy/esp"
 
 module Sendy
   class AuthenticationError < StandardError; end
