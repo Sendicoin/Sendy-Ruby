@@ -23,11 +23,14 @@ module Sendy
 
         values = serialize_params(self).merge(params)
 
-        values.delete(:id)
+        if self.id
+          self.class.update(self.id, values)
+        else
+          values.delete(:id)
 
-
-        resp = request(:post, save_url, values)
-        initialize_from(resp.data)
+          resp = request(:post, save_url, values)
+          initialize_from(resp.data)
+        end
       end
 
       def self.included(base)

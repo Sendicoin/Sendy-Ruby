@@ -130,11 +130,11 @@ describe Sendy::APIResource do
     end
 
     it "accessing a property other than id or parent on an unfetched object should fetch it" do
-      stub_request(:get, "#{Sendy.app_host}/esp_api/v1/users/cus_123/campaigns")
+      stub_request(:get, "#{Sendy.app_host}/api/v1/campaigns/123/events")
         .with(headers: { 'Authorization'=>'token valid_api_token'})
-        .to_return(body: JSON.generate([campaign_fixture]))
-      c = Sendy::User.new("cus_123")
-      c.campaigns
+        .to_return(body: JSON.generate([event_fixture]))
+      c = Sendy::Campaign.new("123")
+      c.events
     end
 
     it "updating an object should issue a POST request with only the changed properties" do

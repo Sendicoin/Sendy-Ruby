@@ -12,7 +12,7 @@ module Sendy
     end
 
     def self.resource_count_url
-      "#{Sendy.app_host}/esp_api/v1/#{OBJECT_NAME}s/count"
+      "#{Sendy.app_host}/esp_api/v1/#{OBJECT_NAME}s/count.json"
     end
 
     def add_tokens(amount)
@@ -35,7 +35,7 @@ module Sendy
 
     def events(params = {})
       Event.list(params, { endpoint: Event.resource_endpoint(id),
-                           operations: [:list] })
+                           operations: [:list, :create] })
     end
 
     def subscribers(params = {})
