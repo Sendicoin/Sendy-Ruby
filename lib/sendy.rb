@@ -38,8 +38,12 @@ require "sendy/transaction"
 require "sendy/user"
 
 module Sendy
-  class AuthenticationError < StandardError;end
-  class InvalidRequestError < StandardError;end
+  class AuthenticationError < StandardError; end
+  class DuplicateEvent < StandardError; end
+  class InvalidParams < StandardError; end
+  class InternalAPIError < StandardError; end
+  class IncorrectTransaction < StandardError; end
+  class InvalidRequestError < StandardError; end
 
   class << self
     attr_accessor :app_host, :app_esp_name, :app_esp_password, :user_api_token

@@ -17,9 +17,7 @@ module Sendy
 
     def add_tokens(amount)
       params = { uid: uid, amount: amount }
-      resp = request(:post, "#{Sendy.app_host}/api/v1/add_tokens_to_user", params)
-
-      # TODO ESP API
+      resp = request(:post, "#{Sendy.app_host}/esp_api/v1/add_tokens_to_user", params)
       update_balance(resp.balance)
     end
 
