@@ -1,11 +1,11 @@
 module Sendy
   class User < APIResource
-    OBJECT_NAME = 'user'.freeze
-
-    extend  Sendy::APIOperations::NestedResource
+    extend  Sendy::APIOperations::List
     extend  Sendy::APIOperations::Create
     extend  Sendy::APIOperations::Count
     include Sendy::APIOperations::Save
+
+    OBJECT_NAME = 'user'.freeze
 
     def self.resource_url
       "#{Sendy.app_host}/esp_api/v1/#{OBJECT_NAME}s"
@@ -41,10 +41,6 @@ module Sendy
     def subscribers(params = {})
       Subscriber.list(params, { endpoint: Subscriber.resource_endpoint(id),
                                 operations: [:list] })
-    end
-
-    def self.list(_params = nil)
-      raise NotImplementedError, "Users cannot be listed"
     end
 
     def delete(_params = {})

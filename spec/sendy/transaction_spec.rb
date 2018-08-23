@@ -5,14 +5,14 @@ require 'spec_helper'
 describe Sendy::Transaction do
   before do
     Sendy.app_host = 'http://localhost:3000'
-    Sendy.app_esp_password = 'valid_api_token'
+    Sendy.user_api_token = 'valid_api_token'
 
     stub_request(:get, "http://localhost:3000/api/v1/transactions")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
-      .to_return(body: JSON.generate(data: [transaction_fixture]))
+      .to_return(body: JSON.generate([transaction_fixture]))
 
     stub_request(:get, "http://localhost:3000/api/v1/transactions/1")
       .with(

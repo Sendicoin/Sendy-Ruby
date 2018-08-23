@@ -11,7 +11,7 @@ RSpec.configure do |config|
       with(headers: {'Authorization'=>'token'}).
       to_raise(Sendy::AuthenticationError)
 
-    stub_request(:get, 'http://localhost:3000/api/v1/users/cus_123').
+    stub_request(:get, 'http://localhost:3000/api/v1/transactions/123').
       with(headers: {'Authorization'=>'token'}).
       to_raise(Sendy::AuthenticationError)
   end

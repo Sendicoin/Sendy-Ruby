@@ -54,14 +54,14 @@ describe Sendy::APIResource do
 
   context 'wrong credentials' do
     it "not specifying api credentials should raise an exception" do
-      Sendy.app_esp_password = nil
-      expect { Sendy::User.new("cus_123").refresh }.to raise_error(Sendy::AuthenticationError)
+      Sendy.user_api_token = nil
+      expect { Sendy::Transaction.new("123").refresh }.to raise_error(Sendy::AuthenticationError)
     end
   end
 
   context "with valid credentials" do
     before do
-      Sendy.app_esp_password = 'valid_api_token'
+      Sendy.user_api_token = 'valid_api_token'
     end
 
     it "urlencode values in GET params" do
@@ -71,7 +71,7 @@ describe Sendy::APIResource do
           headers: {
             'Authorization'=>'token valid_api_token',
           })
-        .to_return(body: JSON.generate(data: [campaign_fixture, campaign_fixture]))
+        .to_return(body: JSON.generate([campaign_fixture, campaign_fixture]))
       campaigns = Sendy::Campaign.list(user: "1").data
       expect(campaigns.is_a? Array).to be true
     end
@@ -130,15 +130,15 @@ describe Sendy::APIResource do
     end
 
     it "accessing a property other than id or parent on an unfetched object should fetch it" do
-      stub_request(:get, "#{Sendy.app_host}/api/v1/users/cus_123/campaigns")
+      stub_request(:get, "#{Sendy.app_host}/esp_api/v1/users/cus_123/campaigns")
         .with(headers: { 'Authorization'=>'token valid_api_token'})
-        .to_return(body: JSON.generate(data: [campaign_fixture]))
+        .to_return(body: JSON.generate([campaign_fixture]))
       c = Sendy::User.new("cus_123")
       c.campaigns
     end
 
     it "updating an object should issue a POST request with only the changed properties" do
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/1")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/1")
         .with(body: { "email" => "another@example.com" }, headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate({'id' => 1 }))
 
@@ -148,8 +148,7 @@ describe Sendy::APIResource do
     end
 
     xit "updating should merge in returned properties" do
-      # TODO users endpoint has a different approach
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/123")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/123")
         .with(body: { "email" => "test@email.com" }, headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate({}))
       c = Sendy::User.new("123")
@@ -169,7 +168,7 @@ describe Sendy::APIResource do
 
     it "loading all of an APIResource should return an array of recursively instantiated objects" do
       stub_request(:get, "#{Sendy.app_host}/api/v1/transactions")
-        .to_return(body: JSON.generate(data: [transaction_fixture]))
+        .to_return(body: JSON.generate([transaction_fixture]))
       transactions = Sendy::Transaction.list.data
       expect(transactions.class).to eql Array
       expect(transactions[0].class).to eql Sendy::Transaction
@@ -209,7 +208,7 @@ describe Sendy::APIResource do
                                           name: "Marcos",
                                         })
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/user_id")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/user_id")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "user_id"))
 
@@ -227,7 +226,7 @@ describe Sendy::APIResource do
                                           },
                                         })
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/myid")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: { info: { address: { line1: "Test2" } } },
               headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate("id" => "my_id"))
@@ -239,7 +238,7 @@ describe Sendy::APIResource do
     it "correctly handle array setting" do
       user = Sendy::User.construct_from(id: "myid", info: {})
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/myid")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: { info: { address: [{ street: "Company Street" }] } })
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -254,7 +253,7 @@ describe Sendy::APIResource do
                                         },
                                         currencies_supported: %w[usd cad])
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/myid")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -267,7 +266,7 @@ describe Sendy::APIResource do
                                           address: { line1: "1 Two Three" },
                                         })
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users/myid")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -277,7 +276,7 @@ describe Sendy::APIResource do
     it "should create a new resource when an object without an id is saved" do
       user = Sendy::User.construct_from(id: nil, display_name: nil)
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users")
         .with(body: { display_name: "sendy" })
         .to_return(body: JSON.generate("id" => "acct_123"))
 
@@ -288,7 +287,7 @@ describe Sendy::APIResource do
     it "set attributes as part of save" do
       user = Sendy::User.construct_from(id: nil, display_name: nil)
 
-      stub_request(:post, "#{Sendy.app_host}/api/v1/users")
+      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users")
         .with(body: { display_name: "sendy", metadata: { key: "value" } })
         .to_return(body: JSON.generate("id" => "acct_123"))
 
@@ -297,7 +296,7 @@ describe Sendy::APIResource do
 
     context "#count" do
       it "count resources" do
-        stub_request(:get, "#{Sendy.app_host}/api/v1/users/count.json")
+        stub_request(:get, "#{Sendy.app_host}/esp_api/v1/users/count.json")
           .with(headers: { 'Authorization'=>'token valid_api_token' })
           .to_return(body: JSON.generate("count" => 100))
 

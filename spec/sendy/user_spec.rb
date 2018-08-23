@@ -42,13 +42,13 @@ describe Sendy::User do
     expect { Sendy::User.list }.to_not raise_error(NotImplementedError)
   end
 
-  xit "is findable" do
+  it "is findable" do
     user = Sendy::User.find("CXasPzXK3r3C52asgMv8vMk2")
     assert_requested :get, "#{Sendy.app_host}/esp_api/v1/users/#{user.api_token}"
     expect(user.is_a?(Sendy::User))
   end
 
-  xit "is retrievable" do
+  it "is retrievable" do
     user = Sendy::User.retrieve("CXasPzXK3r3C52asgMv8vMk2")
     assert_requested :get, "#{Sendy.app_host}/esp_api/v1/users/#{user.api_token}"
     expect(user.is_a?(Sendy::User))

@@ -20,9 +20,9 @@ module Sendy
         end
 
         def api_request(method, url, params = {})
-          params.merge!(Sendy.esp_login_params)
+          params.merge!(Sendy.esp_login_params).reject! {|_k, v| v.nil? }
           RestClient::Request.execute(method: method, url: url, payload: params,
-                                      headers: { Authorization: "token #{Sendy.app_esp_password}" })
+                                      headers: { Authorization: "token #{Sendy.user_api_token}" })
         end
       end
 

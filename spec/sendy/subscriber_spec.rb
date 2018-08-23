@@ -5,14 +5,14 @@ require 'spec_helper'
 describe Sendy::Subscriber do
   before do
     Sendy.app_host = 'http://localhost:3000'
-    Sendy.app_esp_password = 'valid_api_token'
+    Sendy.user_api_token = 'valid_api_token'
 
     stub_request(:get, "http://localhost:3000/api/v1/subscribers")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
-      .to_return(body: JSON.generate(data: [subscriber_fixture]))
+      .to_return(body: JSON.generate([subscriber_fixture]))
 
     stub_request(:get, "http://localhost:3000/api/v1/subscribers/1")
       .with(
@@ -64,7 +64,7 @@ describe Sendy::Subscriber do
           headers: {
             'Authorization'=>'token valid_api_token',
           })
-        .to_return(body: JSON.generate(data: [event_fixture]))
+        .to_return(body: JSON.generate([event_fixture]))
 
       stub_request(:post, "http://localhost:3000/api/v1/subscribers/1/events")
         .with(
@@ -99,7 +99,7 @@ describe Sendy::Subscriber do
           headers: {
             'authorization'=>'token valid_api_token',
           })
-            .to_return(body: JSON.generate(data: [campaign_fixture]))
+            .to_return(body: JSON.generate([campaign_fixture]))
 
       stub_request(:post, "http://localhost:3000/api/v1/subscribers/1/campaigns")
         .with(

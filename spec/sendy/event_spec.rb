@@ -5,14 +5,14 @@ require 'spec_helper'
 describe Sendy::Event do
   before do
     Sendy.app_host = 'http://localhost:3000'
-    Sendy.app_esp_password = 'valid_api_token'
+    Sendy.user_api_token = 'valid_api_token'
 
     stub_request(:get, "http://localhost:3000/api/v1/events")
       .with(
         headers: {
           'Authorization'=>'token valid_api_token',
         })
-      .to_return(body: JSON.generate(data: [event_fixture]))
+      .to_return(body: JSON.generate([event_fixture]))
 
     stub_request(:get, "http://localhost:3000/api/v1/events/1")
       .with(
