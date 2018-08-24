@@ -35,6 +35,10 @@ module Sendy
       end
     end
 
+    def find(uid)
+      data.select {|obj| obj.uid.to_s == uid.to_s}.first
+    end
+
     def self.list(filters = {}, list_options = {})
       if operations.nil? || operations.empty? || operations.include?(:list)
         super(params)
