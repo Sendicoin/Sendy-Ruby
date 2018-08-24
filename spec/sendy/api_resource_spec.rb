@@ -138,7 +138,7 @@ describe Sendy::APIResource do
     end
 
     it "updating an object should issue a POST request with only the changed properties" do
-      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/1")
+      stub_request(:put, "#{Sendy.app_host}/esp_api/v1/users/1")
         .with(body: { "email" => "another@example.com" }, headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate({'id' => 1 }))
 
@@ -208,7 +208,7 @@ describe Sendy::APIResource do
                                           name: "Marcos",
                                         })
 
-      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/user_id")
+      stub_request(:put, "#{Sendy.app_host}/esp_api/v1/users/user_id")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "user_id"))
 
@@ -226,7 +226,7 @@ describe Sendy::APIResource do
                                           },
                                         })
 
-      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
+      stub_request(:put, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: { info: { address: { line1: "Test2" } } },
               headers: { 'Authorization'=>'token valid_api_token'})
         .to_return(body: JSON.generate("id" => "my_id"))
@@ -238,7 +238,7 @@ describe Sendy::APIResource do
     it "correctly handle array setting" do
       user = Sendy::User.construct_from(id: "myid", info: {})
 
-      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
+      stub_request(:put, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: { info: { address: [{ street: "Company Street" }] } })
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -253,7 +253,7 @@ describe Sendy::APIResource do
                                         },
                                         currencies_supported: %w[usd cad])
 
-      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
+      stub_request(:put, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 
@@ -266,7 +266,7 @@ describe Sendy::APIResource do
                                           address: { line1: "1 Two Three" },
                                         })
 
-      stub_request(:post, "#{Sendy.app_host}/esp_api/v1/users/myid")
+      stub_request(:put, "#{Sendy.app_host}/esp_api/v1/users/myid")
         .with(body: {})
         .to_return(body: JSON.generate("id" => "myid"))
 

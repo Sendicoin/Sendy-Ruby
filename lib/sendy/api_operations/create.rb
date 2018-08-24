@@ -5,7 +5,11 @@ module Sendy
     module Create
       def create(params = {})
         resp = request(:post, resource_url, params)
-        Util.convert_to_sendy_object(resp.data)
+        if resp&.data
+          Util.convert_to_sendy_object(resp.data)
+        else
+          Util.convert_to_sendy_object(resp)
+        end
       end
     end
   end

@@ -12,7 +12,12 @@ module Sendy
           end
 
           resp = request(:put, "#{resource_url}/#{id}", params)
-          Util.convert_to_sendy_object(resp.data)
+
+          if resp&.data
+            Util.convert_to_sendy_object(resp.data)
+          else
+            Util.convert_to_sendy_object(resp)
+          end
         end
       end
 
@@ -23,13 +28,18 @@ module Sendy
 
         values = serialize_params(self).merge(params)
 
-        if self.id
+        if self[:id]
           self.class.update(self.id, values)
         else
           values.delete(:id)
 
           resp = request(:post, save_url, values)
-          initialize_from(resp.data)
+
+          if resp&.data
+            initialize_from(resp.data)
+          else
+            Util.convert_to_sendy_object(resp)
+          end
         end
       end
 

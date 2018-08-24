@@ -5,11 +5,11 @@ module Sendy
     module Request
       module ClassMethods
         def request(method, url, params = {})
-          response = OpenStruct.new(data: JSON.parse(api_request(method, url, params), symbolize_names: true))
+          OpenStruct.new(data: JSON.parse(api_request(method, url, params), symbolize_names: true))
         rescue RestClient::NotAcceptable => e
-          raise Sendy::InvalidParams.new(e.response.to_s)
-        rescue RestClient::UnprocessableEntity => e
           raise Sendy::InvalidRequestError.new(e.response.to_s)
+        rescue RestClient::UnprocessableEntity => e
+          JSON.parse(e.response.to_s, symbolize_names: true)
         rescue RestClient::InternalServerError => e
           raise Sendy::InternalAPIError.new
         rescue RestClient::Unauthorized => e

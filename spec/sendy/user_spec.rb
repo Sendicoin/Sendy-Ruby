@@ -10,13 +10,13 @@ describe Sendy::User do
 
     stub_request(:get, "http://localhost:3000/esp_api/v1/users")
       .with(body: { "esp_name"=>"sendy", "esp_password"=>"123456" })
-      .to_return(body: JSON.generate(data: [user_fixture]))
+      .to_return(body: JSON.generate([user_fixture]))
 
     stub_request(:post, "http://localhost:3000/esp_api/v1/users")
       .with(body: { "esp_name"=>"sendy",
                     "esp_password"=>"123456",
                     "email" => "email@example.com" })
-      .to_return(body: JSON.generate(data: [user_fixture]))
+      .to_return(body: JSON.generate([user_fixture]))
 
     stub_request(:post, "http://localhost:3000/esp_api/v1/users/1")
       .with(body: { "esp_name"=>"sendy",
@@ -61,7 +61,7 @@ describe Sendy::User do
     user = Sendy::User.retrieve("CXasPzXK3r3C52asgMv8vMk2")
     user.email = 'another@email.com'
     user.save
-    assert_requested :post, "#{Sendy.app_host}/esp_api/v1/users/1"
+    assert_requested :put, "#{Sendy.app_host}/esp_api/v1/users/1"
   end
 
   it "is updateable" do
