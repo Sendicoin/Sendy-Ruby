@@ -7,7 +7,6 @@ module Sendy
       when Array
         data.map { |i| convert_to_sendy_object(i) }
       when Hash
-        # Try converting to a known object class.  If none available, fall back to generic StripeObject
         object_classes.fetch(data[:object], SendyObject).construct_from(data)
       else
         data
@@ -43,18 +42,18 @@ module Sendy
         new_hash = {}
         object.each do |key, value|
           key = (begin
-                 key.to_sym
-        rescue StandardError
-          key
-        end) || key
-        new_hash[key] = symbolize_names(value)
+                   key.to_sym
+                 rescue StandardError
+                   key
+                 end) || key
+          new_hash[key] = symbolize_names(value)
+        end
+        new_hash
+      when Array
+        object.map { |value| symbolize_names(value) }
+      else
+        object
       end
-      new_hash
-    when Array
-      object.map { |value| symbolize_names(value) }
-    else
-      object
     end
-  end
   end
 end

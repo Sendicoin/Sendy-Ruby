@@ -7,7 +7,7 @@ module Sendy
     include Sendy::APIOperations::Request
     include Sendy::APIOperations::Create
 
-    OBJECT_NAME = "list".freeze
+    OBJECT_NAME = 'list'
 
     # This accessor allows a `ListObject` to inherit various filters that were
     # given to a predecessor. This allows for things like consistent limits,
@@ -18,7 +18,7 @@ module Sendy
     # there isn't a next page in order to replicate the behavior of the API
     # when it attempts to return a page beyond the last.
     def self.empty_list
-      ListObject.construct_from({ data: [] })
+      ListObject.construct_from(data: [])
     end
 
     def initialize(*args)
@@ -26,33 +26,32 @@ module Sendy
       self.filters = {}
     end
 
-    def [](k)
-      case k
+    def [](key)
+      case key
       when String, Symbol
         super
       else
-        raise ArgumentError, "You tried to access the #{k.inspect} index, but ListObject types only support String keys. (HINT: List calls return an object with a 'data' (which is the data array). You likely want to call #data[#{k.inspect}])"
+        raise ArgumentError, "You tried to access the #{key.inspect} index, but " \
+          'ListObject types only support String keys. (HINT: List calls return an' \
+          " object with a 'data' (which is the data array). You likely want to call" \
+          " #data[#{key.inspect}])"
       end
     end
 
     def find(uid)
-      data.select {|obj| obj.uid.to_s == uid.to_s}.first
+      data.select { |obj| obj.uid.to_s == uid.to_s }.first
     end
 
     def self.list(filters = {}, list_options = {})
-      if operations.nil? || operations.empty? || operations.include?(:list)
-        super(params)
-      else
-        raise InvalidRequestError, "This resource cannot be created"
-      end
+      return super(filters, list_options) if operations.nil? || operations.empty? ||
+                                             operations.include?(:list)
+      raise InvalidRequestError, 'This resource cannot be created'
     end
 
     def create(params = {})
-      if operations.nil? || operations.empty? || operations.include?(:create)
-        super(params)
-      else
-        raise InvalidRequestError, "This resource cannot be created"
-      end
+      return super(params) if operations.nil? || operations.empty? ||
+                              operations.include?(:create)
+      raise InvalidRequestError, 'This resource cannot be created'
     end
 
     # Iterates through each resource in the page represented by the current

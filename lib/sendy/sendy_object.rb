@@ -164,17 +164,17 @@ module Sendy
       @values.values
     end
 
-    def to_json(*_a)
+    def to_json(*_args)
       JSON.generate(@values)
     end
 
-    def as_json(*a)
-      @values.as_json(*a)
+    def as_json(*args)
+      @values.as_json(*args)
     end
 
     def to_hash
       maybe_to_hash = lambda do |value|
-        value && value.respond_to?(:to_hash) ? value.to_hash : value
+        value&.respond_to?(:to_hash) ? value.to_hash : value
       end
 
       @values.each_with_object({}) do |(key, value), acc|
@@ -231,10 +231,9 @@ module Sendy
         #      values within in that its parent SendyObject doesn't know about.
         #
         unsaved = @unsaved_values.include?(k)
-        if options[:force] || unsaved || v.is_a?(SendyObject)
-          update_hash[k.to_sym] =
-            serialize_params_value(@values[k], @original_values[k], unsaved, options[:force], key: k)
-        end
+        next unless options[:force] || unsaved || v.is_a?(SendyObject)
+        update_hash[k.to_sym] = serialize_params_value(@values[k], @original_values[k],
+                                                       unsaved, options[:force], key: k)
       end
 
       # a `nil` that makes it out of `#serialize_params_value` signals an empty
@@ -251,7 +250,7 @@ module Sendy
         obj.serialize_params(options)
       end
       extend Gem::Deprecate
-      deprecate :serialize_params, "#serialize_params", 2016, 9
+      deprecate :serialize_params, '#serialize_params', 2016, 9
     end
 
     # A protected field is one that doesn't get an accessor assigned to it
@@ -304,9 +303,9 @@ module Sendy
           end
 
           define_method(:"#{k}=") do |v|
-            if v == ""
+            if v == ''
               raise ArgumentError, "You cannot set #{k} to an empty string. " \
-                "We interpret empty strings as nil in requests. " \
+                'We interpret empty strings as nil in requests. ' \
                 "You may set (object).#{k} = nil to delete the property."
             end
             @values[k] = Util.convert_to_sendy_object(v)
@@ -323,7 +322,7 @@ module Sendy
 
     def method_missing(name, *args)
       # TODO: only allow setting in updateable classes.
-      if name.to_s.end_with?("=")
+      if name.to_s.end_with?('=')
         attr = name.to_s[0...-1].to_sym
 
         # Pull out the assigned value. This is only used in the case of a
@@ -337,7 +336,9 @@ module Sendy
         begin
           mth = method(name)
         rescue NameError
-          raise NoMethodError, "Cannot set #{attr} on this object. HINT: you can't set: #{@@permanent_attributes.to_a.join(', ')}"
+          invalid_attr = @@permanent_attributes.to_a.join(', ')
+          msg = "Cannot set #{attr} on this object. HINT: you can't set: #{invalid_attr}"
+          raise NoMethodError, msg
         end
         return mth.call(args[0])
       elsif @values.key?(name)
@@ -352,12 +353,16 @@ module Sendy
         # raise right away.
         raise unless @transient_values.include?(name)
 
-        raise NoMethodError, e.message + ".  HINT: The '#{name}' attribute was set in the past, however.  It was then wiped when refreshing the object with the result returned by Sendy's API, probably as a result of a save().  The attributes currently available on this object are: #{@values.keys.join(', ')}"
+        raise NoMethodError, e.message + ".  HINT: The '#{name}' attribute was set in" \
+          ' the past, however.  It was then wiped when refreshing the object with the' \
+          " result returned by Sendy's API, probably as a result of a save()." \
+          'The attributes currently available on this object are: ' \
+          "#{@values.keys.join(', ')}"
       end
     end
 
     def respond_to_missing?(symbol, include_private = false)
-      @values && @values.key?(symbol) || super
+      @values&.key?(symbol) || super
     end
 
     # Re-initializes the object based on a hash of values (usually one that's
@@ -403,7 +408,7 @@ module Sendy
 
     def serialize_params_value(value, original, unsaved, force, key: nil)
       if value.nil?
-        ""
+        ''
 
       # The logic here is that essentially any object embedded in another
       # object that had a `type` is actually an API resource of a different
@@ -512,14 +517,15 @@ module Sendy
     # SendyObject.
     def empty_values(obj)
       values = case obj
-               when Hash         then obj
+               when Hash then obj
                when SendyObject then obj.instance_variable_get(:@values)
                else
-                 raise ArgumentError, "#empty_values got unexpected object type: #{obj.class.name}"
+                 message = "#empty_values got unexpected object type: #{obj.class.name}"
+                 raise ArgumentError, message
                end
 
       values.each_with_object({}) do |(k, _), update|
-        update[k] = ""
+        update[k] = ''
       end
     end
   end

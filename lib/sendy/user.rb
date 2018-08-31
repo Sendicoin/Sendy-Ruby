@@ -1,8 +1,8 @@
 module Sendy
   class User < APIResource
-    extend  Sendy::APIOperations::List
-    extend  Sendy::APIOperations::Create
-    extend  Sendy::APIOperations::Count
+    extend Sendy::APIOperations::List
+    extend Sendy::APIOperations::Create
+    extend Sendy::APIOperations::Count
     include Sendy::APIOperations::Save
 
     OBJECT_NAME = 'user'.freeze
@@ -22,27 +22,26 @@ module Sendy
     end
 
     def campaigns(params = {})
-      Campaign.list(params, { endpoint: Campaign.resource_endpoint(id) })
+      Campaign.list(params, endpoint: Campaign.resource_endpoint(id))
     end
 
     def transactions(params = {})
-      Transaction.list(params, {
-                        endpoint: Transaction.resource_endpoint(id),
-                        operations: [:list]})
+      Transaction.list(params, endpoint: Transaction.resource_endpoint(id),
+                               operations: [:list])
     end
 
     def events(params = {})
-      Event.list(params, { endpoint: Event.resource_endpoint(id),
-                           operations: [:list, :create] })
+      Event.list(params, endpoint: Event.resource_endpoint(id),
+                         operations: [:list, :create])
     end
 
     def subscribers(params = {})
-      Subscriber.list(params, { endpoint: Subscriber.resource_endpoint(id),
-                                operations: [:list] })
+      Subscriber.list(params, endpoint: Subscriber.resource_endpoint(id),
+                              operations: [:list])
     end
 
     def delete(_params = {})
-      raise NotImplementedError, "Users cannot be deleted"
+      raise NotImplementedError, 'Users cannot be deleted'
     end
 
     private

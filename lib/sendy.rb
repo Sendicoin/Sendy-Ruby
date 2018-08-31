@@ -1,42 +1,41 @@
 # frozen_string_literal: true
 
-require "cgi"
-require "faraday"
-require "json"
-require "logger"
-require "openssl"
-require "rbconfig"
-require "securerandom"
-require "set"
-require "socket"
-require "uri"
-require "rest-client"
+require 'cgi'
+require 'faraday'
+require 'json'
+require 'logger'
+require 'openssl'
+require 'rbconfig'
+require 'securerandom'
+require 'set'
+require 'socket'
+require 'uri'
+require 'rest-client'
 
 # Version
-require "sendy/version"
+require 'sendy/version'
 
 # API operations
-require "sendy/api_operations/create"
-require "sendy/api_operations/delete"
-require "sendy/api_operations/list"
-require "sendy/api_operations/nested_resource"
-require "sendy/api_operations/request"
-require "sendy/api_operations/save"
-require "sendy/api_operations/count"
+require 'sendy/api_operations/create'
+require 'sendy/api_operations/delete'
+require 'sendy/api_operations/list'
+require 'sendy/api_operations/request'
+require 'sendy/api_operations/save'
+require 'sendy/api_operations/count'
 
 # API resource support classes
-require "sendy/util"
-require "sendy/sendy_object"
-require "sendy/list_object"
-require "sendy/api_resource"
+require 'sendy/util'
+require 'sendy/sendy_object'
+require 'sendy/list_object'
+require 'sendy/api_resource'
 
 # Named API resources
-require "sendy/campaign"
-require "sendy/event"
-require "sendy/subscriber"
-require "sendy/transaction"
-require "sendy/user"
-require "sendy/esp"
+require 'sendy/campaign'
+require 'sendy/event'
+require 'sendy/subscriber'
+require 'sendy/transaction'
+require 'sendy/user'
+require 'sendy/esp'
 
 module Sendy
   class AuthenticationError < StandardError; end

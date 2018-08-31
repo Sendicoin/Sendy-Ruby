@@ -7,12 +7,13 @@ module Sendy
     attr_accessor :save_with_parent
 
     def self.class_name
-      name.split("::")[-1]
+      name.split('::')[-1]
     end
 
     def self.resource_url
       if self == APIResource
-        raise NotImplementedError, "APIResource is an abstract class.  You should perform actions on its subclasses"
+        raise NotImplementedError, 'APIResource is an abstract class.' \
+          'You should perform actions on its subclasses'
       end
       # Namespaces are separated in object names with periods (.) and in URLs
       # with forward slashes (/), so replace the former with the latter.
@@ -41,8 +42,10 @@ module Sendy
     end
 
     def resource_url
-      unless (id = self["id"])
-        raise InvalidRequestError, "Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}"
+      unless (id = self['id'])
+        msg = 'Could not determine which URL to request: ' \
+          "#{self.class} instance has invalid ID: #{id.inspect}"
+        raise InvalidRequestError, msg
       end
       "#{self.class.resource_url}/#{CGI.escape(id.to_s)}"
     end
