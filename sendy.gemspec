@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.author = "Sendy"
 
 
+  s.add_development_dependency "rspec"
   s.files = `git ls-files`.split("\n")
   s.require_paths = ["lib"]
 end

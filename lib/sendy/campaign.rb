@@ -1,47 +1,25 @@
 module Sendy
-  module Campaign
+  class Campaign < APIResource
+    extend Sendy::APIOperations::List
+    extend Sendy::APIOperations::Create
+    extend Sendy::APIOperations::Count
 
-    def create_campaign(params)
-      # TODO catch insuficient balance
-      Campaign.new(OpenStruct.new(api_call('post', campaigns_url, params)))
+    OBJECT_NAME = 'campaign'.freeze
+
+    def self.update(_id, _params = nil)
+      raise NotImplementedError, 'Campaigns cannot be updated'
     end
 
-    def find_campaign(campaign_id)
-      Campaign.new(OpenStruct.new(api_call('get', "#{campaigns_url}/#{campaign_id}")))
+    def save(_params = nil)
+      raise NotImplementedError, 'Campaigns cannot be saved'
     end
 
-    def campaigns
-      api_call('get', campaigns_url).map { |campaign| Campaign.new(OpenStruct.new(campaign)) }
+    def delete(_params = {})
+      raise NotImplementedError, 'Campaigns cannot be deleted'
     end
 
-    def campaigns_url
-      "#{Sendy.app_host}/api/campaigns"
-    end
-
-    class Campaign
-      include Sendy
-
-      attr_reader :id, :uid, :user_id, :created_at, :updated_at,
-                  :subject, :balance, :opened_stake, :clicked_stake, :converted_stake,
-                  :period_start, :period_end, :initial_balance, :status, :left_over
-
-      def initialize(params)
-        @id = params[:id]
-        @uid = params[:uid]
-        @user_id = params[:user_id]
-        @created_at = params[:created_at]
-        @updated_at = params[:updated_at]
-        @subject = params[:subject]
-        @balance = params[:balance]
-        @opened_stake = params[:opened_stake]
-        @clicked_stake = params[:clicked_stake]
-        @converted_stake = params[:converted_stake]
-        @period_start = params[:period_start]
-        @period_end = params[:period_end]
-        @initial_balance = params[:initial_balance]
-        @status = params[:status]
-        @left_over = params[:left_over]
-      end
+    def events(params = {})
+      Event.list(params, endpoint: Event.resource_endpoint(id, OBJECT_NAME))
     end
   end
 end

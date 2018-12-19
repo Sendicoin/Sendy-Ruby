@@ -1,26 +1,24 @@
 module Sendy
-  module Transaction
+  class Transaction < APIResource
+    extend Sendy::APIOperations::List
+    extend Sendy::APIOperations::Count
 
-    def transactions
-      api_call('get', transactions_url).map do |transaction| 
-        Transaction.new(OpenStruct.new(transaction))
-      end
+    OBJECT_NAME = 'transaction'.freeze
+
+    def self.update(_id, _params = nil)
+      raise NotImplementedError, 'Transactions cannot be updated'
     end
 
-    def transactions_url
-      "#{Sendy.app_host}/api/transactions"
+    def self.create(_params = nil)
+      raise NotImplementedError, 'Transactions cannot be created'
     end
 
-    class Transaction
-      include Sendy
-      attr_reader :type, :created_at, :update_at, :amount
+    def save(_params = nil)
+      raise NotImplementedError, 'Transactions cannot be saved'
+    end
 
-      def initialize(params)
-        @type = params[:type]
-        @created_at = params[:created_at]
-        @update_at = params[:updated_at]
-        @amount = params[:amount]
-      end
+    def delete(_params = {})
+      raise NotImplementedError, 'Transactions cannot be deleted'
     end
   end
 end
