@@ -7,7 +7,7 @@ module Sendy
     include Subscriber
     
     attr_reader :id, :uid, :balance, :email,
-                :api_token, :esp_id, :last_auth_header
+                :api_token, :esp_id, :last_auth_header, :name
 
     def initialize(params)
       @id = params[:id]
@@ -16,6 +16,7 @@ module Sendy
       @email = params[:email]
       @api_token = params[:api_token] if params[:api_token]
       @esp_id = params[:esp_id] || 1
+      @name = params[:name]
     end
 
     def add_tokens(amount)
