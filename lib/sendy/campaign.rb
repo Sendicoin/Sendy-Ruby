@@ -25,7 +25,7 @@ module Sendy
                   :subject, :balance, :opened_stake, :clicked_stake, :converted_stake,
                   :period_start, :period_end, :initial_balance, :status, :left_over,
                   :opened_count, :clicked_count, :converted_count, :one_stake,
-                  :total_stakes
+                  :total_stakes, :subscribers_send_count
 
       def initialize(params)
         @id = params[:id]
@@ -48,6 +48,7 @@ module Sendy
         @converted_count = params[:converted_count]
         @one_stake = params[:one_stake]
         @total_stakes = params[:total_stakes]
+        @subscribers_send_count = params[:subscribers_send_count]
       end
     end
   end
