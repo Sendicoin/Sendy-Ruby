@@ -21,7 +21,7 @@ module Sendy
     class Campaign
       include Sendy
 
-      attr_reader :id, :uid, :user_id, :created_at, :updated_at,
+      attr_reader :id, :user_id, :created_at, :updated_at,
                   :subject, :balance, :opened_stake, :clicked_stake, :converted_stake,
                   :period_start, :period_end, :initial_balance, :status, :left_over,
                   :opened_count, :clicked_count, :converted_count, :one_stake,
@@ -29,7 +29,6 @@ module Sendy
 
       def initialize(params)
         @id = params[:id]
-        @uid = params[:uid]
         @user_id = params[:user_id]
         @created_at = params[:created_at]
         @updated_at = params[:updated_at]
