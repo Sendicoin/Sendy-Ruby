@@ -20,6 +20,7 @@ module Sendy
         @created_at = params[:created_at]
         @update_at = params[:updated_at]
         @amount = params[:amount]
+        @moment_balance = params[:moment_balance]
       end
     end
   end
