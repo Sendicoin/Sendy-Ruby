@@ -15,7 +15,11 @@ module Sendy
     end
 
     def campaigns_url
-      "#{Sendy.app_host}/api/campaigns"
+      "#{Sendy.app_host}/api/v1/campaigns"
+    end
+
+    def campaigns_count
+      api_call('get', "#{campaigns_url}/count")["count"].to_i
     end
 
     class Campaign
