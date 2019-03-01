@@ -9,21 +9,18 @@ module Sendy
     attr_reader :id, :uid, :balance, :email,
                 :api_token, :esp_id, :last_auth_header, :name
 
-    def initialize(params)
-      @id = params[:id]
-      @uid = params[:uid]
-      @balance = params[:balance]
-      @email = params[:email]
-      @api_token = params[:api_token] if params[:api_token]
-      @esp_id = params[:esp_id] || 1
-      @name = params[:name]
+    def initialize(args)
+      args.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
     end
 
     def add_tokens(amount)
       # TODO
       # Bad path validation necessary with error exceptions
       params = { uid: uid, amount: amount }.merge!(Sendy.esp_login_params)
-      result = JSON.parse(RestClient.post( "#{Sendy.app_host}/api/add_tokens_to_user", params))
+      add_tokens_to_user_url = "#{Sendy.app_host}/esp_api/v1/add_tokens_to_user"
+      result = JSON.parse(RestClient.post( add_tokens_to_user_url, params))
       update_balance(result['balance'])
     end
 
