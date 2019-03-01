@@ -28,7 +28,7 @@ module Sendy
     def self.create(params)
       params.merge!(Sendy.esp_login_params)
       result = JSON.parse(RestClient.post(create_user_url, params))
-      self.new(OpenStruct.new(result))
+      self.new(result)
     rescue RestClient::UnprocessableEntity => e
       raise InvalidRequestError.new(JSON.parse(e.response)['errors'])
     end
@@ -36,7 +36,7 @@ module Sendy
     def self.find(params)
       params.merge!(Sendy.esp_login_params)
       result = JSON.parse(RestClient.post(find_user_url, params))
-      self.new(OpenStruct.new(result))
+      self.new(result)
     end
 
     def self.create_user_url
