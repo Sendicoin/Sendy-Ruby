@@ -1,44 +1,30 @@
 module Sendy
   module Subscriber
     def subscribers_count
-      api_call('get', subscribers_count_url)['count']
+      api_call('get', "#{subscribers_url}/count")['count'].to_i
     end
 
     def subscribers
       api_call('get', subscribers_url).map do |subscriber|
-        Subscriber.new(OpenStruct.new(subscriber))
+        Subscriber.new(subscriber)
       end
     end
 
-    def find_subscriber(params)
-      Subscriber.new(OpenStruct.new(api_call('get', "#{subscribers_url}/show", params)))
+    def find_subscriber(api_subscriber_id)
+      Subscriber.new(api_call('get', "#{subscribers_url}/#{api_subscriber_id}"))
     end
 
-    def subscriber_events(subscriber_id)
-      events.select { |event| event.subscriber_id == subscriber_id.to_i }
+    def subscriber_campaign(api_subscriber_id, api_campaign_id)
+      subscriber_campaigns(api_subscriber_id)
+        .select { |campaign| campaign.id == api_campaign_id.to_i }.first
     end
 
-    def subscriber_campaigns(subscriber_id)
-      api_call('get', subscribers_campaigns_url(subscriber_id)).map do |campaign|
-        Campaign.new(OpenStruct.new(campaign))
-      end
-    end
-
-    def subscribers_campaigns_url(subscriber_id)
-      "#{subscribers_url}/#{subscriber_id}/campaigns"
-    end
-
-    def subscriber_campaign(subscriber_id, campaign_id)
-      subscriber_campaigns(subscriber_id)
-        .select { |campaign| campaign.id == campaign_id.to_i }.first
-    end
-
-    def subscribers_count_url
-      "#{Sendy.app_host}/api/subscribers/count.json"
+    def show_by_email(email)
+      Subscriber.new(api_call('get', "#{subscribers_url}/show_by_email", { email: email }))
     end
 
     def subscribers_url
-      "#{Sendy.app_host}/api/subscribers"
+      "#{Sendy.app_host}/api/v1/subscribers"
     end
 
     class Subscriber
@@ -46,14 +32,10 @@ module Sendy
       attr_reader :email, :balance, :name,
                   :sign_up_url, :coins_human, :coins_usd, :confirmed_at
 
-      def initialize(params)
-        @email = params[:email]
-        @balance = params[:balance]
-        @name = params[:name]
-        @sign_up_url = params[:sign_up_url]
-        @coins_human = params[:coins_human]
-        @coins_usd = params[:coins_usd]
-        @confirmed_at = params[:confirmed_at]
+      def initialize(args)
+        args.each do |key, value|
+          instance_variable_set("@#{key}", value)
+        end
       end
     end
   end
