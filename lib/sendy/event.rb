@@ -5,15 +5,31 @@ module Sendy
     end
 
     def create_event(params)
-      Event.new(OpenStruct.new(api_call('post', events_url, params)))
+      Event.new(api_call('post', events_url, params))
     end
 
     def events
-      api_call('get', events_url).map { |event| Event.new(OpenStruct.new(event)) }
+      api_call('get', events_url).map { |event| Event.new(event) }
+    end
+
+    def events_count
+      api_call('get', "#{events_url}/count")["count"].to_i
     end
 
     def events_url
-      "#{Sendy.app_host}/api/events"
+      "#{Sendy.app_host}/api/v1/events"
+    end
+
+    def campaign_events(api_campaign_id)
+      api_call('get', "#{campaigns_url}/#{api_campaign_id}/events").map do |event|
+        Event.new(event)
+      end
+    end
+
+    def subscriber_events(api_subscriber_id)
+      api_call('get', "#{subscribers_url}/#{api_subscriber_id}/events").map do |event|
+        Event.new(event)
+      end
     end
 
     class Event
@@ -22,14 +38,10 @@ module Sendy
       attr_reader :subscriber_id, :event, :user_id,
                   :campaign_id, :email, :occurred_at, :created_at
 
-      def initialize(params)
-        @subscriber_id = params[:subscriber_id]
-        @event = params[:event]
-        @user_id = params[:user_id]
-        @campaign_id = params[:campaign_id]
-        @email = params[:email]
-        @occurred_at = params[:occurred_at]
-        @created_at = params[:created_at]
+      def initialize(args)
+        args.each do |key, value|
+          instance_variable_set("@#{key}", value)
+        end
       end
     end
   end
