@@ -25,11 +25,12 @@ module Sendy
     class Campaign
       include Sendy
 
-      attr_reader :id, :uid, :user_id, :created_at, :updated_at,
+      attr_reader :id, :user_id, :created_at, :updated_at,
                   :subject, :balance, :opened_stake, :clicked_stake, :converted_stake,
                   :period_start, :period_end, :initial_balance, :status, :left_over,
                   :opened_count, :clicked_count, :converted_count, :one_stake,
                   :total_stakes, :subscribers_send_count
+
 
       def initialize(args)
         args.each do |key, value|
