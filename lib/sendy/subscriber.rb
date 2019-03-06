@@ -25,7 +25,7 @@ module Sendy
         .select { |campaign| campaign.id == api_campaign_id.to_i }.first
     end
 
-    def show_by_email(email)
+    def subscriber_by_email(email)
       Subscriber.new(api_call('get', "#{subscribers_url}/show_by_email", { email: email }))
     end
 
