@@ -6,8 +6,8 @@ module Sendy
       end
     end
 
-    def transactions_count
-      api_call('get', "#{transactions_url}/count")['count'].to_i
+    def transactions_count(params={})
+      api_call('get', "#{transactions_url}/count", params)['count'].to_i
     end
 
 
