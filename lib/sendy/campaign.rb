@@ -10,6 +10,10 @@ module Sendy
       Campaign.new(api_call('get', "#{campaigns_url}/#{campaign_id}"))
     end
 
+    def cancel_campaign(campaign_id)
+      Campaign.new(api_call('post', "#{campaigns_url}/#{campaign_id}/cancel"))
+    end
+
     def campaigns(params={})
       api_call('get', campaigns_url, params).map { |campaign| Campaign.new(campaign) }
     end
