@@ -6,6 +6,10 @@ module Sendy
       Campaign.new(api_call('post', campaigns_url, params))
     end
 
+    def update_campaign(params)
+      Campaign.new(api_call('put', "#{campaigns_url}/#{params[:id]}", params))
+    end
+
     def find_campaign(campaign_id)
       Campaign.new(api_call('get', "#{campaigns_url}/#{campaign_id}"))
     end
