@@ -17,7 +17,7 @@ module Sendy
 
     class Transaction
       include Sendy
-      attr_reader :type, :created_at, :update_at, :amount, :moment_balance
+      attr_reader :type, :created_at, :update_at, :amount, :moment_balance, :campaign_id
 
       def initialize(args)
         args.each do |key, value|
